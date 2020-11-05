@@ -1,18 +1,19 @@
 """
-解析宠物技能
+解析宠物技能数据
 """
 
 import os
-from typing import Dict, List
+from typing import Dict, List, Any
 from danteng_lib import load_json
-from common.pad_types import SkillId
+from common.pad_types import Printable, SkillId
+
 from config import RAW_DATA_BASE_PATH
 
 # 原始数据文件名
 FILE_NAME = 'download_skill_data.json'
 
 
-class MonsterSkill(object):
+class MonsterSkill(Printable):
     def __init__(self, skill_id: int, raw: List[str]):
         self.skill_id = SkillId(skill_id)
 
@@ -25,10 +26,11 @@ class MonsterSkill(object):
         self.params = raw[6:]
 
 
-def load_skill_data() -> Dict:
+def load_skill_data() -> Dict[int, Any]:
     data_json = load_json(os.path.join(RAW_DATA_BASE_PATH, FILE_NAME))
     assert data_json
     skill_data = dict()
     for i, ms in enumerate(data_json['skill']):
         skill_data[i] = MonsterSkill(i, ms)
     return skill_data
+
