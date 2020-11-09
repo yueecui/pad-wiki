@@ -53,8 +53,8 @@ class Card(Printable):
 
         self.id = CardId(int(raw[0]))
         self.name = raw[1]
-        self.attr_id = ElementId(int(raw[2]))
-        self.sub_attr_id = ElementId(int(raw[3]))
+        self.element_id = ElementId(int(raw[2]))
+        self.sub_element_id = ElementId(int(raw[3]))
         self.is_ult = bool(raw[4])  # True if ultimate, False if normal evo
         self.type_1_id = TypeId(int(raw[5]))
         self.type_2_id = TypeId(int(raw[6]))
@@ -70,19 +70,19 @@ class Card(Printable):
         self.released_status = raw[12] == 100
         self.sell_gold_per_level = int(raw[13]) / 10
 
-        self.min_hp = int(raw[14])
-        self.max_hp = int(raw[15])
+        self.hp_min = int(raw[14])
+        self.hp_max = int(raw[15])
         self.hp_scale = float(raw[16])
 
-        self.min_atk = int(raw[17])
-        self.max_atk = int(raw[18])
+        self.atk_min = int(raw[17])
+        self.atk_max = int(raw[18])
         self.atk_scale = float(raw[19])
 
-        self.min_rcv = int(raw[20])
-        self.max_rcv = int(raw[21])
-        self.rcv_scale = float(raw[22])
+        self.rec_min = int(raw[20])
+        self.rec_max = int(raw[21])
+        self.rec_scale = float(raw[22])
 
-        self.xp_max = int(raw[23])
+        self.xp_type = int(raw[23])
         self.xp_scale = float(raw[24])
 
         self.active_skill_id = SkillId(int(raw[25]))
@@ -108,7 +108,7 @@ class Card(Printable):
         self.enemy_coins_per_level = int(raw[38]) / 2
         self.enemy_xp_per_level = int(raw[39]) / 2
 
-        self.ancestor_id = CardId(int(raw[40]))
+        self.father_id = CardId(int(raw[40]))
 
         self.evo_mat_id_1 = CardId(int(raw[41]))
         self.evo_mat_id_2 = CardId(int(raw[42]))
@@ -165,7 +165,7 @@ class Card(Printable):
         self.super_awakenings = list(map(int, filter(str.strip, raw[59].split(','))))  # List[int]
 
         self.base_id = CardId(int(raw[60]))  # 祖先ID
-        self.group_id = raw[61]  # 系统ID（例如日本神）
+        self.series_id = raw[61]  # 系统ID（例如日本神）
         self.type_3_id = TypeId(int(raw[62]))
 
         self.sell_mp = int(raw[63])
@@ -188,7 +188,7 @@ class Card(Printable):
         self.ownable = self.id < 100000
         self.usable = bool(not self.assist_only_flag and self.ownable)
 
-        self.furigana = str(raw[67])  # JP data only?
+        self.search_text = raw[67].strip().split('|') if raw[67] else []  # JP data only?
         self.limit_mult = int(raw[68])
 
         # Number of the voice file, 1-indexed, 0 if no voice
@@ -199,7 +199,7 @@ class Card(Printable):
 
         # Seems like this could have multiple values. Only value so far is: 'link:5757'
         self.tags = raw[71]
-        self.linked_monster_no = None  # type: Optional[CardId]
+        self.linked_monster_no = CardId(0)  # type: Optional[CardId]
 
         if self.tags:
             if 'link:' in self.tags:
@@ -231,16 +231,16 @@ class Card(Printable):
                      self.enemy_skill_refs)
 
     def hp_curve(self) -> Curve:
-        return Curve(self.min_hp, self.max_hp, self.hp_scale, max_level=99)
+        return Curve(self.hp_min, self.hp_max, self.hp_scale, max_level=99)
 
     def atk_curve(self) -> Curve:
-        return Curve(self.min_atk, self.max_atk, self.atk_scale, max_level=99)
+        return Curve(self.atk_min, self.atk_max, self.atk_scale, max_level=99)
 
-    def rcv_curve(self) -> Curve:
-        return Curve(self.min_rcv, self.max_rcv, self.rcv_scale, max_level=99)
+    def rec_curve(self) -> Curve:
+        return Curve(self.rec_min, self.rec_max, self.rec_scale, max_level=99)
 
     def xp_curve(self) -> Curve:
-        return Curve(0, self.xp_max, self.xp_scale, max_level=99)
+        return Curve(0, self.xp_type, self.xp_scale, max_level=99)
 
     def feed_xp_curve(self) -> Curve:
         return Curve(self.feed_xp_per_level, max_level=99)

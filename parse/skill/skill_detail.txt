@@ -1,0 +1,5 @@
+ele_damage_all            # 对敌方全体造成倍率的属性伤害：属性，倍率
+fixed_ele_damage_all        # 对敌方全体造成固定的属性伤害：属性，固定值
+drop_buff_0 至 drop_buff_5   # 宝珠性能buff 0-4代表五属性，6代表回复：回合数，倍率
+extra_combos            # 额外combos的buff：回合数，combos数
+flat_damage_single         # 对单体造成无视防御伤害：总伤害，攻击次数（次数用于重复多次的技能）

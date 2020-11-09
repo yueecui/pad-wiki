@@ -3,6 +3,7 @@
 """
 
 import os
+import re
 from typing import Dict, List, Any
 from danteng_lib import load_json
 from common.pad_types import Printable, SkillId
@@ -18,7 +19,7 @@ class MonsterSkill(Printable):
         self.skill_id = SkillId(skill_id)
 
         self.name = raw[0]
-        self.description = raw[1]  # 有部分带格式，使用特殊符号^
+        self.description = convert_color_tag(raw[1])  # 带有格式的转换为颜色了，如果以后出现其他的再处理
         self.skill_type = int(raw[2])
         self.levels = int(raw[3]) or None
         self.turn_max = int(raw[4]) if self.levels else None
@@ -34,3 +35,8 @@ def load_skill_data() -> Dict[int, Any]:
         skill_data[i] = MonsterSkill(i, ms)
     return skill_data
 
+
+def convert_color_tag(text):
+    text = re.sub(r'\^([a-f0-9]{6})\^', r'<span style="color:#\1">', text)
+    text = text.replace('^p', '</span>')
+    return text
