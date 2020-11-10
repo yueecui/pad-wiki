@@ -1,2 +1,1 @@
-from .active_skill import get_active_skill_detail
-from .leader_skill import get_leader_skill_detail
+from .skill_detail import get_active_skill_detail, get_leader_skill_detail

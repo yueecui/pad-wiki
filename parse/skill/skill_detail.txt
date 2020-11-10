@@ -1,5 +1,40 @@
-ele_damage_all            # 对敌方全体造成倍率的属性伤害：属性，倍率
+# 伤害效果
+ele_damage_all            # 对敌方全体造成倍率的属性伤害：属性，倍率，最小倍率（背水一击）
+ele_damage_single      # 对敌方单体造成属性伤害：属性，倍率，最小倍率（背水一击）；属性为10时是自属性
+ele_damage_by_ele      # 对敌方指定属性的敌人造成伤害：伤害属性，倍率，目标属性
 fixed_ele_damage_all        # 对敌方全体造成固定的属性伤害：属性，固定值
-drop_buff_0 至 drop_buff_5   # 宝珠性能buff 0-4代表五属性，6代表回复：回合数，倍率
-extra_combos            # 额外combos的buff：回合数，combos数
 flat_damage_single         # 对单体造成无视防御伤害：总伤害，攻击次数（次数用于重复多次的技能）
+percent_damage              # 对剩余HP的重力攻击：百分比
+
+# 回复效果
+fixed_heal              # 固定点数回复：回复点数
+rec_heal                # 按回复力比例回复：回复倍率
+percent_heal            # 百分比回复：回复百分比
+bind_heal               # 绑定回复：回复回合数
+as_invalid_heal            # 觉醒无效回复：回复回合数
+absorb_heal             # 伤害技能附带的吸收效果：吸收百分比
+
+# 珠子效果
+turn_type
+turn_from
+turn_to
+orb_power
+
+# 强化效果
+atk_buff                # 影响ATK的buff：特有格式，参考：get_blank_atk_buff_map
+rec_buff                 # 影响回复力的buff：回合数，倍率
+move_buff                # 宝珠移动时间buff：回合数，秒数，倍率（秒数倍率应该2选1）
+combo_buff            # 额外combos的buff：回合数，combos数
+
+# 伤害减免
+damage_cut              # 受到属性伤害减少，100时免疫：特殊格式
+
+# 其他效果
+the_world               # 时间停止：持续秒数
+skill_boost             # 技能加速：回合最小，回合最大
+poison                      # 使敌方中毒：掉血倍率
+sub_leader              # 替换队长
+ele_change               # 自身属性变化：回合数，属性
+
+ele_absorb_invalid          # 属性吸收无效
+damage_absorb_invalid       # 伤害吸收无效

@@ -1,5 +1,6 @@
 import math
 from typing import NewType
+from enum import Enum
 
 
 # 原始数据类型
@@ -38,3 +39,37 @@ class Curve(Printable):
         f = 1 if self.max_level == 1 else ((level - 1) / (self.max_level - 1))
         return int(round(self.min_value + (self.max_value - self.min_value) * math.pow(f, self.scale)))
 
+
+# 进化类型
+class EvoType(Enum):
+    BASE = 0
+    NORMAL = 1              # 进化
+    ULT = 11                # 究极进化
+    SUPER_ULT = 12          # 超究极进化
+    REBIRTH = 21            # 转生进化
+    SUPER_REBIRTH = 22      # 超转生进化
+    DOT = 31                # 点阵进化
+    ASSIST = 41             # 武装化
+
+
+# 宝珠类型
+class OrbType(Enum):
+    FIRE_ORB = 0
+    WATER_ORB = 1
+    WOOD_ORB = 2
+    LIGHT_ORB = 3
+    DARK_ORB = 4
+    HEAL_ORB = 5
+    OBSTACLE_ORB = 6
+    POISON_ORB = 7
+    S_POISON_ORB = 8
+    BOMB_ORB = 9
+
+
+# 转换类型
+class TurnType(Enum):
+    COUNT = 0
+    ROW = 1
+    COLUMN = 2
+    REFRESH = 3
+    ALL = 4

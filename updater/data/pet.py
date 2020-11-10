@@ -1,6 +1,6 @@
 # 整理card数据
 from typing import Dict, Any
-from common.pad_types import CardId, PetInfo
+from common.pad_types import CardId, PetInfo, EvoType
 from parse.raw.skill import load_skill_data
 from parse.raw.card import load_card_data
 from parse.skill import *
@@ -87,26 +87,26 @@ def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
 # 41: 武装化
 def check_evo_type(card_info, card_data):
     if len(card_info.awakenings) > 0 and card_info.awakenings[0] == 49:
-        return 41  # 武装化
+        return EvoType.ASSIST  # 装备化
     if card_info.name.find('ドット・') == 0 and card_info.series_id != 500:  # 500是进化素材（点阵希石）
-        return 31  # 点阵进化
+        return EvoType.DOT  # 点阵进化
     if card_info.base_id == card_info.id:
-        return 0
+        return EvoType.BASE  # BASE卡
     father_info = card_data[card_info.father_id]
     if card_info.is_ult:
         if father_info.is_ult:
-            return 12  # 超究极进化
+            return EvoType.SUPER_ULT  # 超究极进化
         else:
-            return 11  # 究极进化
+            return EvoType.ULT  # 究极进化
     else:
         if father_info.is_ult:
-            return 21  # 转生
+            return EvoType.REBIRTH  # 转生
         else:
             # 判断一下父级是否为转生
             if check_evo_type(father_info, card_data) == 21:
-                return 22  # 超转生
+                return EvoType.SUPER_REBIRTH  # 超转生
             else:
-                return 1  # 普通进化
+                return EvoType.NORMAL  # 普通进化
 
 
 # pet只包括玩家可用的卡
