@@ -50,26 +50,3 @@ class EvoType(Enum):
     SUPER_REBIRTH = 22      # 超转生进化
     DOT = 31                # 点阵进化
     ASSIST = 41             # 武装化
-
-
-# 宝珠类型
-class OrbType(Enum):
-    FIRE_ORB = 0
-    WATER_ORB = 1
-    WOOD_ORB = 2
-    LIGHT_ORB = 3
-    DARK_ORB = 4
-    HEAL_ORB = 5
-    OBSTACLE_ORB = 6
-    POISON_ORB = 7
-    S_POISON_ORB = 8
-    BOMB_ORB = 9
-
-
-# 转换类型
-class TurnType(Enum):
-    COUNT = 0
-    ROW = 1
-    COLUMN = 2
-    REFRESH = 3
-    ALL = 4

@@ -39,7 +39,7 @@ def get_leader_skill_detail(skill_id, skill_data):
 
 # 连续施放多个技能效果
 def skill_type_116(result, skill_id, skill_data):
-    p = skill_data[skill_id].params
+    p = list(skill_data[skill_id].params)
 
     # 错误检查
     # 判断会重复同一个子技能多次的都是单体固定伤害
@@ -71,4 +71,32 @@ def skill_type_116(result, skill_id, skill_data):
     result['desc_cn'].clear()
     for desc, desc_count in skill_desc_count_map.items():
         result['desc_cn'].append(f'{desc}{f"×{desc_count}次" if desc_count > 1 else ""}')
+
+
+# 随机施放一个技能效果
+def skill_type_118(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+
+    result['desc_cn'].append(f'随机发动以下{len(p)}个技能之一')
+    result['random_skill'] = []
+    result['detail']['random_effect'] = [True]
+    # 错误检查
+    # 判断会重复同一个子技能多次的都是单体固定伤害
+    for random_sk_id in p:
+        random_sk_info = {
+            'name': skill_data[random_sk_id].name,
+            'desc_cn': [],
+            'detail': {}
+        }
+        try:
+            eval(f'skill_type_{skill_data[random_sk_id].skill_type}(random_sk_info, random_sk_id, skill_data)')
+        except NameError as e:
+            error = str(e)
+            if error not in temp:
+                temp.append(error)
+                print(error)
+
+        del random_sk_info['detail']
+        result['random_skill'].append(random_sk_info)
+
 
