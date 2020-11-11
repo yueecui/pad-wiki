@@ -34,6 +34,25 @@ def skill_type_154(result, skill_id, skill_data):
         result['detail']['all'] = True
 
 
+# 根据队伍特定觉醒数量产生效果
+def skill_type_156(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 6)
+    if p[4] == 1:  # 根据觉醒回血
+        aw_sk_info = get_awakening_skill_info(p[1:4])
+        result['desc_cn'].append(f'根据队伍中{aw_sk_info[0]}的觉醒数回复HP，每个觉醒回复{p[5]}点HP')
+        result['detail']['awakening_heal'] = [p[5], p[1], p[2], p[3]]
+    elif p[4] == 2:  # 根据觉醒提升攻击力
+        p[5] -= 100
+        aw_sk_info = get_awakening_skill_info(p[1:4])
+        result['desc_cn'].append(f'{p[0]}回合内，根据队伍中{aw_sk_info[0]}的觉醒数提升攻击力，每个觉醒提升{p[5]}%')
+        result['detail']['awakening_atk'] = [p[0], p[5], p[1], p[2], p[3]]
+    elif p[4] == 3:  # 根据觉醒减少受到的伤害
+        aw_sk_info = get_awakening_skill_info(p[1:4])
+        result['desc_cn'].append(f'{p[0]}回合内，根据队伍中{aw_sk_info[0]}的觉醒数减少受到伤害，每个觉醒减少{p[5]}%')
+        result['detail']['awakening_cut'] = [p[0], p[5], p[1], p[2], p[3]]
+
+
 # 一段时间内增加combo
 def skill_type_160(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
@@ -46,6 +65,16 @@ def skill_type_161(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
     result['desc_cn'].append(f'敌方全体损失最大HP的{p[0]}%')
     result['detail']['max_percent_damage'] = [p[0]]
+
+
+# 根据队伍特定觉醒数量提升攻击力
+# 与156相比，只能写攻击力，目前的例子都是和156同时使用，可能是什么特殊的判定导致不能写2个156
+def skill_type_168(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 8)
+    aw_sk_info = get_awakening_skill_info(p[1:4])
+    result['desc_cn'].append(f'{p[0]}回合内，根据队伍中{aw_sk_info[0]}的觉醒数提升攻击力，每个觉醒提升{p[7]}%')
+    result['detail']['awakening_atk'] = [p[0], p[7], p[1], p[2], p[3]]
 
 
 # 宝珠解锁
@@ -87,6 +116,44 @@ def skill_type_176(result, skill_id, skill_data):
     result['detail']['turn_to'][p[5]] = 1
 
 
+# 持续回复技能，外加绑定和觉醒无效解除
+def skill_type_179(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 5)
+
+    temp_text = []
+    if p[1] > 0:
+        assert p[2] == 0
+        temp_text.append(f'{p[0]}回合内，每回合回复{p[1]}点HP')
+        result['detail']['fixed_hot'] = [p[0], p[1]]
+    elif p[2] > 0:
+        assert p[1] == 0
+        if p[2] >= 100:
+            temp_text.append(f'{p[0]}回合内，每回合HP完全回复')
+        else:
+            temp_text.append(f'{p[0]}回合内，每回合HP回复最大值的{p[2]}%')
+        result['detail']['percent_hot'] = [p[0], p[2]]
+
+    if p[3] == p[4] != 0:
+        if p[3] == 9999:
+            temp_text.append(f'绑定状态和觉醒无效状态全回复')
+        else:
+            temp_text.append(f'绑定状态和觉醒无效状态{p[0]}回合回复')
+    else:
+        if p[3] == 9999:
+            temp_text.append(f'绑定状态全回复')
+        elif p[3] > 0:
+            temp_text.append(f'绑定状态{p[0]}回合回复')
+        if p[4] == 9999:
+            temp_text.append(f'觉醒无效状态全回复')
+        elif p[4] > 0:
+            temp_text.append(f'觉醒无效状态{p[0]}回合回复')
+
+    result['desc_cn'].append('，'.join(temp_text))
+    result['detail']['bind_heal'] = [p[3]]
+    result['detail']['as_invalid_heal'] = [p[4]]
+
+
 # 强化宝珠掉落率提升
 def skill_type_180(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
@@ -113,6 +180,42 @@ def skill_type_188(result, skill_id, skill_data):
         result['detail']['flat_damage_single'] = [p[0], 1]
 
 
+# 特殊专用技能
+def skill_type_189(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    result['desc_cn'].append(f'所有宝珠解锁锁定')
+    result['detail']['unlock_all'] = [True]
+
+    result['detail']['turn_type'] = get_blank_turn_type_map()
+    result['detail']['turn_type']['all'] = True
+    result['detail']['turn_to'] = bitmap_to_flag_array(0)
+    result['detail']['turn_to'][0] = 1
+    result['detail']['turn_to'][1] = 1
+    result['detail']['turn_to'][2] = 1
+    result['detail']['turn_to'][3] = 1
+    result['desc_cn'].append(f'所有宝珠变成{get_enable_orb_text(result["detail"]["turn_to"])}')
+
+    result['desc_cn'].append(f'显示3 Combos的转珠路线（普通地下城＆三消模式限定）')
+
+
+# 伤害无效贯通
+def skill_type_191(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    result['desc_cn'].append(f'{p[0]}回合内，攻击可以贯通伤害无效状态')
+    result['detail']['damage_immunity_invalid'] = [p[0]]
+
+
+# 自残
+def skill_type_195(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 1)
+    if p[0] == 0:
+        result['desc_cn'].append('HP变为1')
+    else:
+        result['desc_cn'].append(f'HP变为当前的{p[0]}%')
+    result['detail']['consume_hp'] = [p[0]]
+
+
 # 无法消除宝珠状态回复
 def skill_type_196(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
@@ -120,4 +223,4 @@ def skill_type_196(result, skill_id, skill_data):
         result['desc_cn'].append(f'无法消除宝珠状态完全回复')
     else:
         result['desc_cn'].append(f'无法消除宝珠状态{p[0]}回合回复')
-    result['detail']['drop_ban_heal'] = p[0]
+    result['detail']['drop_ban_heal'] = [p[0]]

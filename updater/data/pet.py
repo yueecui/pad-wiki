@@ -36,7 +36,7 @@ def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
         },
         'awakenings': card_info.awakenings,
         'super_awakenings': card_info.super_awakenings,
-        'active_skill': get_active_skill_detail(card_info.active_skill_id, skill_data),
+        # 'active_skill': get_active_skill_detail(card_info.active_skill_id, skill_data),
         'leader_skill': get_leader_skill_detail(card_info.leader_skill_id, skill_data),
         'value': {
             'xp_per_level': card_info.feed_xp_per_level,

@@ -213,23 +213,43 @@ def get_ele_atk_text(ele_array):
         return f'{"、".join(row_text_list[:-1])}和{row_text_list[-1]}总攻击力'
 
 
+# 根据array生成一个觉醒技能序列文字
+def get_awakening_skill_info(aw_sk_array):
+    name_list = []
+    extra_text_list = []
+    for aw_id in aw_sk_array:
+        if aw_id > 0:
+            assert aw_id in AWAKENING_SKILL_MAP
+            aw_sk_info = AWAKENING_SKILL_MAP[aw_id]
+            name_list.append(aw_sk_info['n'])
+            if aw_sk_info.get('plus'):
+                extra_text_list.append(f'{AWAKENING_SKILL_MAP[aw_sk_info["plus"]["id"]]["n"]}视为{aw_sk_info["plus"]["v"]}个{aw_sk_info["n"]}')
+
+    if len(name_list) == 1:
+        name_text = f'{name_list[0]}'
+    else:
+        name_text = f'{"、".join(name_list[:-1])}和{name_list[-1]}'
+
+    return [name_text, '，'.join(extra_text_list)]
+
+
 # 获得一个空的攻击力buff表
 def get_blank_atk_buff_map():
     return {
-        0: False,  # 火,
-        1: False,  # 水,
-        2: False,  # 木,
-        3: False,  # 光
-        4: False,  # 暗,
-        5: False,  # 回复力
-        11: False,  # 平衡,
-        12: False,  # 体力,
-        13: False,  # 回复,
-        14: False,  # 龙,
-        15: False,  # 神,
-        16: False,  # 攻击,
-        17: False,  # 恶魔,
-        18: False,  # 机械,
+        0: 0,  # 火,
+        1: 0,  # 水,
+        2: 0,  # 木,
+        3: 0,  # 光
+        4: 0,  # 暗,
+        5: 0,  # 回复力
+        11: 0,  # 平衡,
+        12: 0,  # 体力,
+        13: 0,  # 回复,
+        14: 0,  # 龙,
+        15: 0,  # 神,
+        16: 0,  # 攻击,
+        17: 0,  # 恶魔,
+        18: 0,  # 机械,
         't': 0,  # 回合数
         'm': 0,  # 倍率
     }
@@ -238,12 +258,12 @@ def get_blank_atk_buff_map():
 # 获得一个空的攻宝珠buff表
 def get_blank_orb_buff_map():
     return {
-        0: False,  # 火,
-        1: False,  # 水,
-        2: False,  # 木,
-        3: False,  # 光,
-        4: False,  # 暗,
-        5: False,  # 心
+        0: 0,  # 火,
+        1: 0,  # 水,
+        2: 0,  # 木,
+        3: 0,  # 光,
+        4: 0,  # 暗,
+        5: 0,  # 心
         'm': 0,  # 强化倍率
     }
 
@@ -280,3 +300,74 @@ def get_shape_info(shape_array):
         raise Exception(f'新形状：{code}')
     else:
         return SHAPE_CODE_MAP[code]
+
+
+# 转换flag为宠物分类表
+def convert_pet_category(ele_flag=0, type_flag=0):
+    ele_list = bitmap_to_flag_array(ele_flag, 5)
+    type_list = bitmap_to_flag_array(type_flag, 9)  # 八种类型，但0位不用
+
+    return {
+        0: ele_list[0],  # 火,
+        1: ele_list[1],  # 水,
+        2: ele_list[2],  # 木,
+        3: ele_list[3],  # 光
+        4: ele_list[4],  # 暗,
+        11: type_list[1],  # 平衡,
+        12: type_list[2],  # 体力,
+        13: type_list[3],  # 回复,
+        14: type_list[4],  # 龙,
+        15: type_list[5],  # 神,
+        16: type_list[6],  # 攻击,
+        17: type_list[7],  # 恶魔,
+        18: type_list[8],  # 机械,
+        'hp': 0,  # HP倍率
+        'atk': 0,  # 攻击力倍率
+        'rec': 0,  # 回复力倍率
+        'cut': 0,  # 伤害减免率
+        'time': 0,  # 额外移动时间
+    }
+
+
+# 获取队长buff效果
+def get_blank_leader_buff(ele_flag=0, type_flag=0):
+    pet_category = convert_pet_category(ele_flag, type_flag)
+
+    pet_category.update({
+        'hp': 1,  # HP倍率
+        'atk': 1,  # 攻击力倍率
+        'rec': 1,  # 回复力倍率
+        'cut': 0,  # 伤害减免率
+        'time': 0,  # 额外移动时间
+    })
+    return pet_category
+
+
+# 2个leader_buff求并集
+def union_leader_buff(base_leader_buff, new_leader_buff):
+    for k, v in base_leader_buff.items():
+        if new_leader_buff.get(k):
+            if type(k) == int:
+                base_leader_buff[k] = v or new_leader_buff[k]
+            elif k in ['hp', 'atk', 'rec']:
+                base_leader_buff[k] *= new_leader_buff[k]
+            elif k == 'cut':
+                pass
+            elif k == 'time':
+                base_leader_buff[k] += new_leader_buff[k]
+
+
+# 生成队长技能描述宠物分类的
+def get_pet_category_text(pet_category):
+    category_list = []
+    for ele_id in range(5):
+        if pet_category[ele_id]:
+            category_list.append(f'{ELEMENT_MAP[ele_id]}属性')
+    for type_id in range(11, 19):
+        if pet_category[type_id]:
+            category_list.append(f'{TYPE_MAP[type_id-10]}类')
+
+    if len(category_list) == 1:
+        return category_list[0]
+    else:
+        return f'{"、".join(category_list[:-1])}和{category_list[-1]}'

@@ -198,6 +198,19 @@ def skill_type_142(result, skill_id, skill_data):
     result['detail']['ele_change'] = [p[0], p[1]]
 
 
+# 按队伍HP造成属性伤害（目前只有一例，数值可能不对）
+def skill_type_143(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 3)
+    p[0] = get_times(p[0])
+
+    result['desc_cn'].append(f'对敌方{"1" if p[1] == 1 else "全"}体造成队伍HP{p[0]}倍的{element(p[2])}属性伤害')
+    if p[2] == 1:
+        result['detail']['team_ele_damage_single'] = [99, p[0], p[2]]
+    else:
+        result['detail']['team_ele_damage_all'] = [99, p[0], p[2]]
+
+
 # 按队伍攻击力造成属性伤害
 def skill_type_144(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
@@ -207,7 +220,10 @@ def skill_type_144(result, skill_id, skill_data):
     attack_base = bitmap_to_flag_array(p[0], 5)
 
     result['desc_cn'].append(f'对敌方{"1" if p[2] == 1 else "全"}体造成队伍{get_ele_atk_text(attack_base)}{p[1]}倍的{element(p[3])}属性伤害')
-    result['detail']['team_rec_heal'] = [p[0]]
+    if p[2] == 1:
+        result['detail']['team_ele_damage_single'] = [sum(attack_base), p[1], p[3]]
+    else:
+        result['detail']['team_ele_damage_all'] = [sum(attack_base), p[1], p[3]]
 
 
 # 按队伍回复力回复HP

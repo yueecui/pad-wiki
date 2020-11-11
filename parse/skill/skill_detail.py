@@ -9,18 +9,15 @@ def get_active_skill_detail(skill_id, skill_data):
         'name': skill_data[skill_id].name,
         'desc_jp': skill_data[skill_id].description,
         'desc_cn': [],
-        # 'type': skill_data[skill_id].skill_type,
         'max_level': skill_data[skill_id].levels,
         'turn_max': skill_data[skill_id].turn_max,
         'turn_min': skill_data[skill_id].turn_min,
-        # 'params': skill_data[skill_id].params,
+        'type': skill_data[skill_id].skill_type,
+        'params': skill_data[skill_id].params,
         'detail': {}
     }
 
     if skill_id > 0:
-        assert result['max_level'] > 0
-        assert result['turn_max'] > 0
-
         try:
             eval(f'skill_type_{skill_data[skill_id].skill_type}(result, skill_id, skill_data)')
         except NameError as e:
@@ -29,12 +26,30 @@ def get_active_skill_detail(skill_id, skill_data):
                 temp.append(error)
                 print(error)
 
-    z = 1
     return result
 
 
 def get_leader_skill_detail(skill_id, skill_data):
-    return {}
+    result = {
+        'id': skill_id,
+        'name': skill_data[skill_id].name,
+        'desc_jp': skill_data[skill_id].description,
+        'desc_cn': [],
+        'type': skill_data[skill_id].skill_type,
+        'params': skill_data[skill_id].params,
+        'detail': {}
+    }
+
+    if skill_id > 0:
+        try:
+            eval(f'skill_type_{skill_data[skill_id].skill_type}(result, skill_id, skill_data)')
+        except NameError as e:
+            error = str(e)
+            if error not in temp:
+                temp.append(error)
+                print(error)
+
+    return result
 
 
 # 连续施放多个技能效果

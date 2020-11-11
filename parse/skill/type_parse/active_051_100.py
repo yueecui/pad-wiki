@@ -15,7 +15,7 @@ def skill_type_52(result, skill_id, skill_data):
     result['desc_cn'].append(f'强化{orb(p[0])}（每颗提升伤害{p[1]}%）')
     if 'orb_power' not in result['detail']:
         result['detail']['orb_power'] = get_blank_orb_buff_map()
-    result['detail']['orb_power'][p[0]] = True
+    result['detail']['orb_power'][p[0]] = 1
     result['detail']['orb_power']['m'] = p[1]
 
 
@@ -148,7 +148,7 @@ def skill_type_88(result, skill_id, skill_data):
         result['detail']['atk_buff'] = get_blank_atk_buff_map()
     result['detail']['atk_buff']['t'] = p[0]
     result['detail']['atk_buff']['m'] = p[2]
-    result['detail']['atk_buff'][p[1] + 10] = True
+    result['detail']['atk_buff'][p[1] + 10] = 1
 
 
 # 双属性攻击力buff（也包括回复力）
@@ -162,8 +162,8 @@ def skill_type_90(result, skill_id, skill_data):
         result['detail']['atk_buff'] = get_blank_atk_buff_map()
     result['detail']['atk_buff']['t'] = p[0]
     result['detail']['atk_buff']['m'] = p[3]
-    result['detail']['atk_buff'][p[1]] = True
-    result['detail']['atk_buff'][p[2]] = True
+    result['detail']['atk_buff'][p[1]] = 1
+    result['detail']['atk_buff'][p[2]] = 1
 
 
 # 双强化宝珠
@@ -173,8 +173,8 @@ def skill_type_91(result, skill_id, skill_data):
     result['desc_cn'].append(f'强化{orb(p[0])}和{orb(p[1])}（每颗提升伤害{p[2]}%）')
     if 'orb_power' not in result['detail']:
         result['detail']['orb_power'] = get_blank_orb_buff_map()
-    result['detail']['orb_power'][p[0]] = True
-    result['detail']['orb_power'][p[1]] = True
+    result['detail']['orb_power'][p[0]] = 1
+    result['detail']['orb_power'][p[1]] = 1
     result['detail']['orb_power']['m'] = p[2]
 
 
@@ -188,8 +188,8 @@ def skill_type_92(result, skill_id, skill_data):
         result['detail']['atk_buff'] = get_blank_atk_buff_map()
     result['detail']['atk_buff']['t'] = p[0]
     result['detail']['atk_buff']['m'] = p[3]
-    result['detail']['atk_buff'][p[1] + 10] = True
-    result['detail']['atk_buff'][p[2] + 10] = True
+    result['detail']['atk_buff'][p[1] + 10] = 1
+    result['detail']['atk_buff'][p[2] + 10] = 1
 
 
 # 更换队长
