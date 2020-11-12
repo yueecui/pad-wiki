@@ -40,7 +40,16 @@ def get_leader_skill_detail(skill_id, skill_data):
         'detail': {}
     }
 
-    if skill_id > 0:
+    # 特殊卡的处理
+    # 蛋龙
+    if skill_data[skill_id].skill_type == 48:
+        if result['id'] in [859]:
+            result['desc_cn'] = '作为合成素材时，将会解放宠物的觉醒技能'
+        elif result['id'] in [860, 1600, 2486]:
+            result['desc_cn'] = '作为合成素材时，将有几率解放宠物的觉醒技能'
+
+    # 正常处理
+    elif skill_id > 0:
         try:
             eval(f'skill_type_{skill_data[skill_id].skill_type}(result, skill_id, skill_data)')
         except NameError as e:

@@ -246,6 +246,33 @@ def skill_type_41(result, skill_id, skill_data):
     result['detail']['counter_attack'] = [p[0], p[1], p[2]]
 
 
+# HP在百分比以上时，一定几率减少伤害
+def skill_type_43(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+
+    leader_buff = get_blank_leader_buff()
+
+    if p[0] == 100:
+        if p[1] == 100:
+            result['desc_cn'].append(f'HP全满时，受到的伤害减少{p[2]}%')
+            leader_buff['d_rate'] = 100 - p[2]
+        else:
+            result['desc_cn'].append(f'HP全满时，有{p[1]}%几率减少受到的伤害{p[2]}%')
+    elif p[0] == 1:
+        if p[1] == 100:
+            result['desc_cn'].append(f'HP在{p[0]}%以上时，受到的伤害减少{p[2]}%')
+            leader_buff['d_rate'] = 100 - p[2]
+        else:
+            result['desc_cn'].append(f'HP在{p[0]}%以上时，有{p[1]}%几率减少受到的伤害{p[2]}%')
+    else:
+        if p[1] == 100:
+            result['desc_cn'].append(f'受到的所有伤害减少{p[2]}%')
+            leader_buff['d_rate'] = 100 - p[2]
+        else:
+            result['desc_cn'].append(f'有{p[1]}%几率减少受到的伤害{p[2]}%')
+    update_leader_buff(result, leader_buff)
+
+
 # HP在百分比以上时，变化三围
 def skill_type_44(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
@@ -257,13 +284,46 @@ def skill_type_44(result, skill_id, skill_data):
 
     if p[0] == 100:
         result['desc_cn'].append(f'HP全满时，所有宠物的{get_pet_status_text(hp_m, atk_m, rec_m)}')
-        result['detail']['hp_max'] = [True]
+        result['detail']['hp_max_status'] = [True]
     else:
-        result['desc_cn'].append(f'HP在{p[0]}以上时，所有宠物的{get_pet_status_text(hp_m, atk_m, rec_m)}')
-        result['detail']['hp_high'] = [p[0]]
+        result['desc_cn'].append(f'HP在{p[0]}%以上时，所有宠物的{get_pet_status_text(hp_m, atk_m, rec_m)}')
+        result['detail']['hp_high_status'] = [p[0]]
 
     leader_buff = get_blank_leader_buff()
     leader_buff['hp'] = hp_m if hp_m > 0 else 1
     leader_buff['atk'] = atk_m if atk_m > 0 else 1
     leader_buff['rec'] = rec_m if rec_m > 0 else 1
     update_leader_buff(result, leader_buff)
+
+
+# 按双属性提升HP
+def skill_type_46(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    p[2] = get_times(p[2])
+
+    pet_category = convert_pet_category()
+    pet_category[p[0]] = 1
+    pet_category[p[1]] = 1
+
+    result['desc_cn'].append(f'{get_pet_category_text(pet_category)}宠物的{get_pet_status_text(p[2], 0, 0)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['hp'] = p[2]
+
+    update_leader_buff(result, leader_buff, pet_category)
+
+
+# 单属性提升HP
+def skill_type_48(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    p[1] = get_times(p[1])
+
+    pet_category = convert_pet_category()
+    pet_category[p[0]] = 1
+
+    result['desc_cn'].append(f'{get_pet_category_text(pet_category)}宠物的{get_pet_status_text(p[1], 0, 0)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['hp'] = p[1]
+
+    update_leader_buff(result, leader_buff, pet_category)
