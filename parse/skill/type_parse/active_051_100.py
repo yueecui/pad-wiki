@@ -63,7 +63,7 @@ def skill_type_60(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
     add_zero(p, 3)
     p[1] = get_times(p[1])
-    result['desc_cn'].append(f'{p[0]}回合内，受到伤害时进行反击，造成自身攻击力{p[1]}倍的{element(p[2])}伤害')
+    result['desc_cn'].append(f'{p[0]}回合内，受到伤害时进行反击，对敌方全体造成自身攻击力{p[1]}倍的{element(p[2])}伤害')
     result['detail']['counter_attack'] = [p[0], p[1], p[2]]
 
 

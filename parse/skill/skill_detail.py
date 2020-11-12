@@ -52,7 +52,7 @@ def get_leader_skill_detail(skill_id, skill_data):
     return result
 
 
-# 连续施放多个技能效果
+# 主动技能：连续施放多个技能效果
 def skill_type_116(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
 
@@ -88,7 +88,7 @@ def skill_type_116(result, skill_id, skill_data):
         result['desc_cn'].append(f'{desc}{f"×{desc_count}次" if desc_count > 1 else ""}')
 
 
-# 随机施放一个技能效果
+# 主动技能：随机施放一个技能效果
 def skill_type_118(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
 
@@ -114,4 +114,20 @@ def skill_type_118(result, skill_id, skill_data):
         del random_sk_info['detail']
         result['random_skill'].append(random_sk_info)
 
+
+# 队长技能：合并多个技能效果
+def skill_type_138(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+
+    for sub_id in p:
+        sub_skill_info = skill_data[sub_id]
+
+        try:
+            eval(f'skill_type_{sub_skill_info.skill_type}(result, sub_id, skill_data)')
+        except NameError as e:
+            error = str(e)
+            if error not in temp:
+                temp.append(error)
+                print(error)
+    z = 1
 

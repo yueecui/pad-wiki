@@ -1,0 +1,4 @@
+hp_max   # HP全满时效果：True
+hp_high     # 大于HP一个百分比时效果：百分比
+hp_low     # 小于HP一个百分比时效果：百分比
+counter_attack   # 反击：发动几率，倍率，属性

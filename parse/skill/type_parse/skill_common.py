@@ -10,6 +10,7 @@ ELEMENT_MAP = {
 }
 
 TYPE_MAP = {
+    0: '进化用',
     1: '平衡',
     2: '体力',
     3: '回复',
@@ -18,6 +19,9 @@ TYPE_MAP = {
     6: '攻击',
     7: '恶魔',
     8: '机械',
+    12: '能力觉醒用',
+    14: '强化合成用',
+    15: '贩卖用',
 }
 
 ORB_MAP = {
@@ -304,8 +308,13 @@ def get_shape_info(shape_array):
 
 # 转换flag为宠物分类表
 def convert_pet_category(ele_flag=0, type_flag=0):
+    if ele_flag == -1:
+        ele_flag = 31
+    if type_flag == -1:
+        type_flag = 65535  # 2^16-1
+
     ele_list = bitmap_to_flag_array(ele_flag, 5)
-    type_list = bitmap_to_flag_array(type_flag, 9)  # 八种类型，但0位不用
+    type_list = bitmap_to_flag_array(type_flag, 16)  # 八种类型，但0位不用
 
     return {
         0: ele_list[0],  # 火,
@@ -313,6 +322,7 @@ def convert_pet_category(ele_flag=0, type_flag=0):
         2: ele_list[2],  # 木,
         3: ele_list[3],  # 光
         4: ele_list[4],  # 暗,
+        10: type_list[0],  # 进化用
         11: type_list[1],  # 平衡,
         12: type_list[2],  # 体力,
         13: type_list[3],  # 回复,
@@ -321,53 +331,109 @@ def convert_pet_category(ele_flag=0, type_flag=0):
         16: type_list[6],  # 攻击,
         17: type_list[7],  # 恶魔,
         18: type_list[8],  # 机械,
-        'hp': 0,  # HP倍率
-        'atk': 0,  # 攻击力倍率
-        'rec': 0,  # 回复力倍率
-        'cut': 0,  # 伤害减免率
-        'time': 0,  # 额外移动时间
+        22: type_list[12],  # 能力觉醒用
+        24: type_list[14],  # 强化合成用
+        25: type_list[15],  # 贩卖用
     }
 
 
-# 获取队长buff效果
-def get_blank_leader_buff(ele_flag=0, type_flag=0):
-    pet_category = convert_pet_category(ele_flag, type_flag)
-
-    pet_category.update({
-        'hp': 1,  # HP倍率
-        'atk': 1,  # 攻击力倍率
-        'rec': 1,  # 回复力倍率
-        'cut': 0,  # 伤害减免率
-        'time': 0,  # 额外移动时间
-    })
-    return pet_category
-
-
-# 2个leader_buff求并集
-def union_leader_buff(base_leader_buff, new_leader_buff):
-    for k, v in base_leader_buff.items():
-        if new_leader_buff.get(k):
+# 合并第二个宠物分类到第一个
+def union_pet_category(base_pet_category, merge_pet_category):
+    for k, v in base_pet_category.items():
+        if merge_pet_category.get(k):
             if type(k) == int:
-                base_leader_buff[k] = v or new_leader_buff[k]
-            elif k in ['hp', 'atk', 'rec']:
-                base_leader_buff[k] *= new_leader_buff[k]
-            elif k == 'cut':
-                pass
-            elif k == 'time':
-                base_leader_buff[k] += new_leader_buff[k]
+                base_pet_category[k] = v or merge_pet_category[k]
 
 
 # 生成队长技能描述宠物分类的
 def get_pet_category_text(pet_category):
     category_list = []
     for ele_id in range(5):
-        if pet_category[ele_id]:
+        if pet_category.get(ele_id):
             category_list.append(f'{ELEMENT_MAP[ele_id]}属性')
-    for type_id in range(11, 19):
-        if pet_category[type_id]:
+    for type_id in range(11, 26):
+        if pet_category.get(type_id):
             category_list.append(f'{TYPE_MAP[type_id-10]}类')
 
     if len(category_list) == 1:
         return category_list[0]
     else:
         return f'{"、".join(category_list[:-1])}和{category_list[-1]}'
+
+
+# 获取空的队长buff效果
+def get_blank_leader_buff():
+    return {
+        'hp': 1,  # HP倍率
+        'atk': 1,  # 攻击力倍率
+        'rec': 1,  # 回复力倍率
+        'd_rate': 100,  # 受到伤害的百分比，注意分属性的是单独的
+        # 'ele_d_rate': [100, 100, 100, 100, 100],  # 默认不生成，如果该项目存在，表示这个队长技能会减免特定属性伤害
+        'time': 0,  # 额外移动时间
+        'flat_add': 0,  # 固定追击（无视防御），0=无
+        'atk_add': 0,   # 消珠追打，按自身攻击百分比，0=无，其他数字表示倍率
+        'rec_add': 0,   # 消珠回血，按自身回复百分比
+    }
+
+
+# 2个leader_buff求并集
+def union_leader_buff(base_leader_buff, merge_leader_buff):
+    if 'ele_d_rate' in merge_leader_buff and 'ele_d_rate' not in base_leader_buff:
+        base_leader_buff['ele_d_rate'] = [100, 100, 100, 100, 100]
+
+    for k, v in base_leader_buff.items():
+        if merge_leader_buff.get(k):
+            if type(k) == int:
+                base_leader_buff[k] = v or merge_leader_buff[k]
+            elif k in ['hp', 'atk', 'rec']:
+                base_leader_buff[k] *= merge_leader_buff[k]
+            elif k == 'd_rate':
+                base_leader_buff[k] *= (merge_leader_buff[k] / 100)
+                if int(base_leader_buff[k]) == base_leader_buff[k]:
+                    base_leader_buff[k] = int(base_leader_buff[k])
+            elif k == 'ele_d_rate':
+                for i, rate in enumerate(merge_leader_buff[k]):
+                    base_leader_buff[k][i] *= (merge_leader_buff[k][i] / 100)
+                    if int(base_leader_buff[k][i]) == base_leader_buff[k][i]:
+                        base_leader_buff[k][i] = int(base_leader_buff[k][i])
+            elif k == 'time':
+                base_leader_buff[k] += merge_leader_buff[k]
+    # 如果ele_d_rate为有效值，则d_rate置为-1
+    if 'ele_d_rate' in base_leader_buff and base_leader_buff['d_rate'] != -1:
+        first_rate = base_leader_buff['ele_d_rate'][0]
+        for rate in range(len(base_leader_buff['ele_d_rate'])):
+            if rate != first_rate:
+                base_leader_buff['d_rate'] = -1
+                break
+
+
+# 更新队长技能的效果
+def update_leader_buff(result, leader_buff=None, pet_category=None):
+    if leader_buff:
+        if 'leader_buff' not in result['detail']:
+            result['detail']['leader_buff'] = get_blank_leader_buff()
+        union_leader_buff(result['detail']['leader_buff'], leader_buff)
+    if pet_category:
+        if 'pet_category' not in result['detail']:
+            result['detail']['pet_category'] = convert_pet_category(0, 0)
+        union_pet_category(result['detail']['pet_category'], pet_category)
+
+
+# 获得宠物基本数值倍率描述
+def get_pet_status_text(hp_m, atk_m, rec_m):
+    temp_text = []
+    if hp_m == atk_m == rec_m > 0:
+        temp_text.append(f'全属性变为{hp_m}倍')
+    elif hp_m == rec_m > 0:
+        temp_text.append(f'HP和回复力变为{hp_m}倍')
+        if atk_m > 0:
+            temp_text.append(f'攻击力变为{atk_m}倍')
+    else:
+        if hp_m > 0:
+            temp_text.append(f'HP变为{hp_m}倍')
+        if atk_m > 0:
+            temp_text.append(f'攻击力变为{atk_m}倍')
+        if rec_m > 0:
+            temp_text.append(f'回复力变为{rec_m}倍')
+
+    return "、".join(temp_text)
