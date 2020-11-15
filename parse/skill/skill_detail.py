@@ -47,6 +47,9 @@ def get_leader_skill_detail(skill_id, skill_data):
             result['desc_cn'] = '作为合成素材时，将会解放宠物的觉醒技能'
         elif result['id'] in [860, 1600, 2486]:
             result['desc_cn'] = '作为合成素材时，将有几率解放宠物的觉醒技能'
+    elif skill_data[skill_id].skill_type == 121:
+        if result['id'] in [1911, 1912, 1913, 1914, 1915]:
+            result['desc_cn'] = f'作为{element(result["id"] - 1911)}属性宠物的合成素材时，将必定提升宠物1级技能'
 
     # 正常处理
     elif skill_id > 0:
@@ -138,5 +141,4 @@ def skill_type_138(result, skill_id, skill_data):
             if error not in temp:
                 temp.append(error)
                 print(error)
-    z = 1
 

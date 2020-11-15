@@ -1,5 +1,6 @@
-hp_max_status   # HP全满时效果：True
-hp_high_status     # 大于HP一个百分比时效果：百分比
+hp_high_status     # 大于HP一个百分比时效果：百分比，100时为全满
 hp_low_status     # 小于HP一个百分比时效果：百分比
 counter_attack   # 反击：发动几率，倍率，属性
 cond_d_rate       # 有条件的减伤
+combo_status          # combo数大于X时有效果：combo数
+cross_bonus         # 十字消除时额外奖励：True

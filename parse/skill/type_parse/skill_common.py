@@ -125,13 +125,17 @@ def union_array(orb_array1, orb_array2):
 
 
 # 根据orb_array生成一个列表
-# TODO：更多个性化
+def get_orb_text(orb_id):
+    return f'<div class="orb-{orb_id}">{ORB_MAP[orb_id]}宝珠</div>'
+
+
+# 根据orb_array生成一个列表
 def get_enable_orb_text(orb_array):
     orb_text_list = []
     for index, is_up in enumerate(orb_array):
         if is_up:
-            orb_text_list.append(f'{ORB_MAP[index]}宝珠')
-    return '、'.join(orb_text_list)
+            orb_text_list.append(get_orb_text(index))
+    return ''.join(orb_text_list)
 
 
 # 根据array生成一个描述列的文字
@@ -348,13 +352,21 @@ def union_pet_category(base_pet_category, merge_pet_category):
 # 生成队长技能描述宠物分类的
 def get_pet_category_text(pet_category):
     category_list = []
+    enable_count = 0
     for ele_id in range(5):
         if pet_category.get(ele_id):
             category_list.append(f'{ELEMENT_MAP[ele_id]}属性')
+            enable_count += 1
+    if enable_count == 5:
+        return '所有'
+    enable_count = 0
     for type_id in range(11, 26):
         if pet_category.get(type_id):
             category_list.append(f'{TYPE_MAP[type_id-10]}类')
+    if enable_count == 12:
+        return '所有'
 
+    assert len(category_list) > 0
     if len(category_list) == 1:
         return category_list[0]
     else:
@@ -373,6 +385,7 @@ def get_blank_leader_buff():
         'flat_add': 0,  # 固定追击（无视防御），0=无
         'atk_add': 0,   # 消珠追打，按自身攻击百分比，0=无，其他数字表示倍率
         'rec_add': 0,   # 消珠回血，按自身回复百分比
+        'add_combo': 0,   # 额外加算combo
     }
 
 
@@ -386,7 +399,8 @@ def union_leader_buff(base_leader_buff, merge_leader_buff):
             if type(k) == int:
                 base_leader_buff[k] = v or merge_leader_buff[k]
             elif k in ['hp', 'atk', 'rec']:
-                base_leader_buff[k] *= merge_leader_buff[k]
+                if merge_leader_buff[k] > 0:
+                    base_leader_buff[k] *= merge_leader_buff[k]
             elif k == 'd_rate':
                 base_leader_buff[k] *= (merge_leader_buff[k] / 100)
                 if int(base_leader_buff[k]) == base_leader_buff[k]:
@@ -423,17 +437,25 @@ def update_leader_buff(result, leader_buff=None, pet_category=None):
 def get_pet_status_text(hp_m, atk_m, rec_m):
     temp_text = []
     if hp_m == atk_m == rec_m > 0:
-        temp_text.append(f'全属性变为{hp_m}倍')
+        temp_text.append(f'全属性{hp_m}倍')
     elif hp_m == rec_m > 0:
-        temp_text.append(f'HP和回复力变为{hp_m}倍')
+        temp_text.append(f'HP和回复力{hp_m}倍')
         if atk_m > 0:
-            temp_text.append(f'攻击力变为{atk_m}倍')
+            temp_text.append(f'攻击力{atk_m}倍')
+    elif hp_m == atk_m > 0:
+        temp_text.append(f'HP和攻击力{hp_m}倍')
+        if rec_m > 0:
+            temp_text.append(f'回复力{rec_m}倍')
+    elif atk_m == rec_m > 0:
+        if hp_m > 0:
+            temp_text.append(f'HP{hp_m}倍')
+        temp_text.append(f'攻击力和回复力{atk_m}倍')
     else:
         if hp_m > 0:
-            temp_text.append(f'HP变为{hp_m}倍')
+            temp_text.append(f'HP{hp_m}倍')
         if atk_m > 0:
-            temp_text.append(f'攻击力变为{atk_m}倍')
+            temp_text.append(f'攻击力{atk_m}倍')
         if rec_m > 0:
-            temp_text.append(f'回复力变为{rec_m}倍')
+            temp_text.append(f'回复力{rec_m}倍')
 
     return "、".join(temp_text)
