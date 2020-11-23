@@ -7,3 +7,7 @@ specific_combo_status   # combo数等于X时有效果：combo数
 cross_bonus         # 十字消除时额外奖励：True
 l_bonus         # L消除时额外奖励：True
 big_board       # 7x6面板：True
+multi_bonus     # 联机时额外奖励：True
+disable_drop     # 禁用掉落宝珠奖励：True
+remain_orb      # 消除宝珠后根据剩余宝珠数量追加攻击力：True
+min_remove      # 最低消除需要的宝珠数量：需要宝珠数量

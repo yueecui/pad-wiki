@@ -69,7 +69,40 @@ def skill_type_104(result, skill_id, skill_data):
     result['detail']['combo_status'] = [cond_req]
 
 
-# 总HP减少，按属性提升伤害
+# 无条件变化攻击力和回复力
+def skill_type_105(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 2)
+    atk_times = get_times(p[1])
+    rec_times = get_times(p[0])
+
+    # 单纯减少HP的debuff
+    result['desc_cn'].append(f'所有宠物{get_pet_status_text(0, atk_times, rec_times)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['atk'] = atk_times
+    leader_buff['rec'] = rec_times
+    update_leader_buff(result, leader_buff)
+
+
+# 无条件减少HP，提升攻击力
+def skill_type_106(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 2)
+    hp_times = get_times(p[0])
+    atk_times = get_times(p[1])
+
+    pet_category = convert_pet_category(p[1])
+
+    result['desc_cn'].append(f'HP最大值变为{hp_times}%，所有宠物的{get_pet_status_text(0, atk_times, 0)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['hp'] = hp_times
+    leader_buff['atk'] = atk_times
+    update_leader_buff(result, leader_buff, pet_category)
+
+
+# 无条件减少HP，按属性提升伤害
 def skill_type_107(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
     add_zero(p, 3)
@@ -113,6 +146,29 @@ def skill_type_108(result, skill_id, skill_data):
         update_leader_buff(result, leader_buff, pet_category)
     else:
         raise Exception('未处理分支')
+
+
+# 一次性消除指定个数以上的珠子时，提升攻击力
+def skill_type_109(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 3)
+    atk_times = get_times(p[2])
+    cond_req = p[1]
+
+    orb_array = bitmap_to_flag_array(p[0])
+
+    temp_text = []
+    if len(orb_array) == sum(orb_array):
+        temp_text.append(f'一次性消除任意一种宝珠{cond_req}个以上时，{get_pet_status_text(0, atk_times, 0)}')
+    elif sum(orb_array) == 1:
+        temp_text.append(f'一次性消除{get_enable_orb_text(orb_array)}{cond_req}个以上时，{get_pet_status_text(0, atk_times, 0)}')
+    else:
+        temp_text.append(f'一次性消除{get_enable_orb_text(orb_array)}中任意一种{cond_req}个以上时，{get_pet_status_text(0, atk_times, 0)}')
+
+    result['desc_cn'].append(''.join(temp_text))
+    leader_buff = get_blank_leader_buff()
+    leader_buff['atk'] = atk_times
+    update_leader_buff(result, leader_buff)
 
 
 # 两个属性提升攻击力
@@ -569,6 +625,19 @@ def skill_type_148(result, skill_id, skill_data):
 
     result['desc_cn'].append(f'作为队长进入地下城时，获得的RANK经验值{times}倍')
     result['detail']['bonus_rank_exp'] = [times]
+
+
+# 消除4个回复宝珠时，回复力提升
+def skill_type_149(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    rec_times = get_times(p[0])
+
+    result['desc_cn'].append(f'消除4个{get_orb_text(5)}时，所有宠物{get_pet_status_text(0, 0, rec_times)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['rec'] = rec_times
+
+    update_leader_buff(result, leader_buff)
 
 
 # 包含强化宝珠5个消除的属性攻击力的X倍

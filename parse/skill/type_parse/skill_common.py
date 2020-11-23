@@ -338,6 +338,7 @@ def convert_pet_category(ele_flag=0, type_flag=0):
         22: type_list[12],  # 能力觉醒用
         24: type_list[14],  # 强化合成用
         25: type_list[15],  # 贩卖用
+        'total': sum(ele_list) + sum(type_list),
     }
 
 
