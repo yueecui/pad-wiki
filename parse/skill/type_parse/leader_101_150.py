@@ -1,6 +1,23 @@
 from .skill_common import *
 
 
+# 打出指定combo时，所有宠物增加攻击力
+def skill_type_101(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 2)
+    atk_times = get_times(p[1])
+
+    cond_req = p[0]
+
+    result['desc_cn'].append(f'消除正好{cond_req}COMBO时，{get_pet_status_text(0, atk_times, 0)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['atk'] = atk_times
+    update_leader_buff(result, leader_buff)
+
+    result['detail']['specific_combo_status'] = [cond_req]
+
+
 # 打出指定combo以上时，所有宠物增加攻击力和回复力
 def skill_type_103(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
@@ -52,20 +69,50 @@ def skill_type_104(result, skill_id, skill_data):
     result['detail']['combo_status'] = [cond_req]
 
 
+# 总HP减少，按属性提升伤害
+def skill_type_107(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 3)
+    hp_times = get_times(p[0])
+    atk_times = get_times(p[2])
+
+    if p[1] > 0:
+        pet_category = convert_pet_category(p[1])
+
+        result['desc_cn'].append(f'HP最大值变为{hp_times}%，{get_pet_category_text(pet_category)}宠物的{get_pet_status_text(0, atk_times, 0)}')
+
+        leader_buff = get_blank_leader_buff()
+        leader_buff['hp'] = hp_times
+        leader_buff['atk'] = atk_times
+        update_leader_buff(result, leader_buff, pet_category)
+    else:
+        # 单纯减少HP的debuff
+        result['desc_cn'].append(f'HP最大值变为{hp_times}%')
+
+        leader_buff = get_blank_leader_buff()
+        leader_buff['hp'] = hp_times
+        update_leader_buff(result, leader_buff)
+
+
 # 总HP减少，按类型提升伤害
 def skill_type_108(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
-    times = get_times(p[2])
+    add_zero(p, 3)
+    hp_times = get_times(p[0])
+    atk_times = get_times(p[2])
 
-    pet_category = convert_pet_category()
-    pet_category[p[1] + 10] = 1
+    if p[1] > 0:
+        pet_category = convert_pet_category()
+        pet_category[p[1] + 10] = 1
 
-    result['desc_cn'].append(f'HP最大值变为{p[0]}%，{get_pet_category_text(pet_category)}宠物的{get_pet_status_text(0, times, 0)}')
+        result['desc_cn'].append(f'HP最大值变为{hp_times}%，{get_pet_category_text(pet_category)}宠物的{get_pet_status_text(0, atk_times, 0)}')
 
-    leader_buff = get_blank_leader_buff()
-    leader_buff['atk'] = times
-
-    update_leader_buff(result, leader_buff, pet_category)
+        leader_buff = get_blank_leader_buff()
+        leader_buff['hp'] = hp_times
+        leader_buff['atk'] = atk_times
+        update_leader_buff(result, leader_buff, pet_category)
+    else:
+        raise Exception('未处理分支')
 
 
 # 两个属性提升攻击力
@@ -427,6 +474,56 @@ def skill_type_133(result, skill_id, skill_data):
     leader_buff['rec'] = rec_times
 
     update_leader_buff(result, leader_buff, pet_category)
+
+
+# 根据属性，提升三围，可以指定2段，效果相乘
+def skill_type_136(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 8)
+    pet_category_1 = convert_pet_category(p[0])
+    hp_times_1 = get_times(p[1])
+    atk_times_1 = get_times(p[2])
+    rec_times_1 = get_times(p[3])
+
+    assert p[4] > 0
+    pet_category_2 = convert_pet_category(p[4])
+    hp_times_2 = get_times(p[5])
+    atk_times_2 = get_times(p[6])
+    rec_times_2 = get_times(p[7])
+
+    result['desc_cn'].append(f'{get_pet_category_text(pet_category_1)}宠物{get_pet_status_text(hp_times_1, atk_times_1, rec_times_1)}，'
+                             f'{get_pet_category_text(pet_category_2)}宠物{get_pet_status_text(hp_times_2, atk_times_2, rec_times_2)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['hp'] = max(hp_times_1, hp_times_2, hp_times_1 * hp_times_2)
+    leader_buff['atk'] = max(atk_times_1, atk_times_2, atk_times_1 * atk_times_2)
+    leader_buff['rec'] = max(rec_times_1, rec_times_2, rec_times_1 * rec_times_2)
+    update_leader_buff(result, leader_buff)
+
+
+# 根据类型，提升三围，可以指定2段，效果相乘
+def skill_type_137(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 8)
+    pet_category_1 = convert_pet_category(type_flag=p[0])
+    hp_times_1 = get_times(p[1])
+    atk_times_1 = get_times(p[2])
+    rec_times_1 = get_times(p[3])
+
+    assert p[4] > 0
+    pet_category_2 = convert_pet_category(type_flag=p[4])
+    hp_times_2 = get_times(p[5])
+    atk_times_2 = get_times(p[6])
+    rec_times_2 = get_times(p[7])
+
+    result['desc_cn'].append(f'{get_pet_category_text(pet_category_1)}宠物{get_pet_status_text(hp_times_1, atk_times_1, rec_times_1)}，'
+                             f'{get_pet_category_text(pet_category_2)}宠物{get_pet_status_text(hp_times_2, atk_times_2, rec_times_2)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['hp'] = max(hp_times_1, hp_times_2, hp_times_1 * hp_times_2)
+    leader_buff['atk'] = max(atk_times_1, atk_times_2, atk_times_1 * atk_times_2)
+    leader_buff['rec'] = max(rec_times_1, rec_times_2, rec_times_1 * rec_times_2)
+    update_leader_buff(result, leader_buff)
 
 
 # 根据HP百分比变化攻击力，可以分2段

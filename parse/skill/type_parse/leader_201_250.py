@@ -44,6 +44,7 @@ def skill_type_201(result, skill_id, skill_data):
         raise Exception('未处理的分支')
 
     leader_buff = get_blank_leader_buff()
+    leader_buff['flat_add'] = flat_add
     update_leader_buff(result, leader_buff)
 
 

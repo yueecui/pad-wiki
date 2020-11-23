@@ -2,5 +2,8 @@ hp_high_status     # 大于HP一个百分比时效果：百分比，100时为全
 hp_low_status     # 小于HP一个百分比时效果：百分比
 counter_attack   # 反击：发动几率，倍率，属性
 cond_d_rate       # 有条件的减伤
-combo_status          # combo数大于X时有效果：combo数
+combo_status          # combo数大于等于X时有效果：combo数
+specific_combo_status   # combo数等于X时有效果：combo数
 cross_bonus         # 十字消除时额外奖励：True
+l_bonus         # L消除时额外奖励：True
+big_board       # 7x6面板：True

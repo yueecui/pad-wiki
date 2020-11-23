@@ -58,7 +58,7 @@ def skill_type_157(result, skill_id, skill_data):
     update_leader_buff(result, leader_buff)
 
 
-# 打出指定combo以上时，所有宠物增加攻击力和回复力，可增强
+# 打出宝珠组合时，所有宠物增加攻击力和回复力，可增强
 def skill_type_164(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
     add_zero(p, 8)
@@ -87,7 +87,7 @@ def skill_type_164(result, skill_id, skill_data):
     atk_times = get_times(p[5])
     rec_times = get_times(p[6])
     atk_per_level = get_times(p[7])
-    rec_per_level = atk_per_level
+    # rec_per_level = atk_per_level
     atk_max = get_times(atk_times + (cond_max - cond_req) * atk_per_level, 1)
     rec_max = get_times(atk_times + (cond_max - cond_req) * atk_per_level, 1)
 
@@ -140,6 +140,34 @@ def skill_type_165(result, skill_id, skill_data):
         result['desc_cn'].append(f'{get_enable_orb_text(orb_array)}中的{cond_req}种或以上同时攻击时，{get_pet_status_text(0, atk_base, rec_base)}')
     else:
         result['desc_cn'].append(f'{get_enable_orb_text(orb_array)}中的{cond_req}种同时攻击时，{get_pet_status_text(0, atk_base, rec_base)}，每多1种额外增加{get_pet_status_text(0, atk_pre_level, rec_pre_level)}，最大{cond_req_max}种时{get_pet_status_text(0, atk_max, rec_max)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['atk'] = atk_max
+    leader_buff['rec'] = rec_max
+    update_leader_buff(result, leader_buff)
+
+
+# 指定combo以上提高攻击力和回复力，可增强
+def skill_type_166(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 6)
+
+    # 触发宝珠
+    cond_req = p[0]
+    atk_base = get_times(p[1])  # 最低倍率
+    rec_base = get_times(p[2])  # 最低倍率
+    atk_pre_level = get_times(p[3])  # 每额外一层的倍率
+    rec_pre_level = get_times(p[4])  # 每额外一层的倍率
+    cond_req_max = p[5]
+    atk_max = get_times(atk_base + atk_pre_level * (cond_req_max - cond_req), 1)
+    rec_max = get_times(rec_base + rec_pre_level * (cond_req_max - cond_req), 1)
+
+    if cond_req_max == cond_req:
+        result['desc_cn'].append(f'消除{cond_req}COMBO以上时，{get_pet_status_text(0, atk_base, rec_base)}')
+    elif cond_req_max - cond_req == 1:
+        result['desc_cn'].append(f'消除{cond_req}COMBO时，{get_pet_status_text(0, atk_base, rec_base)}，{cond_req_max}COMBO时{get_pet_status_text(0, atk_max, rec_max)}')
+    else:
+        result['desc_cn'].append(f'消除{cond_req}COMBO时，{get_pet_status_text(0, atk_base, rec_base)}，每+1COMBO增加{get_pet_status_text(0, atk_pre_level, rec_pre_level)}，最大{cond_req_max}COMBO时{get_pet_status_text(0, atk_max, rec_max)}')
 
     leader_buff = get_blank_leader_buff()
     leader_buff['atk'] = atk_max
@@ -220,6 +248,87 @@ def skill_type_169(result, skill_id, skill_data):
     update_leader_buff(result, leader_buff)
 
     result['detail']['combo_status'] = [cond_req]
+
+
+# 多色同时攻击提高攻击力和减伤
+def skill_type_170(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 4)
+
+    # 触发宝珠
+    orb_array = bitmap_to_flag_array(p[0])
+
+    cond_req = p[1]
+    cond_count = sum(orb_array)
+    atk_times = get_times(p[2])  # 攻击倍率
+    d_rate = p[3]  # 减伤率
+
+    if cond_count == cond_req:
+        result['desc_cn'].append(f'{get_enable_orb_text(orb_array)}同时攻击时，{get_pet_status_text(0, atk_times, 0)}'
+                                 f'{f"，受到的伤害减少{d_rate}%" if d_rate > 0 else ""}')
+    else:
+        result['desc_cn'].append(f'{get_enable_orb_text(orb_array)}中的{cond_req}种同时攻击时，{get_pet_status_text(0, atk_times, 0)}'
+                                 f'{f"，受到的伤害减少{d_rate}%" if d_rate > 0 else ""}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['atk'] = atk_times
+    leader_buff['d_rate'] = 100 - d_rate
+    update_leader_buff(result, leader_buff)
+
+
+# 按要求打出宝珠组合时，提升攻击力和减伤
+def skill_type_171(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 7)
+
+    # 触发宝珠
+    cond_map = {
+        'order': [],
+        'orb': {},
+        'all_one': True
+    }
+    for index in range(4):
+        if p[index] == 0:
+            continue
+        orb_array = bitmap_to_flag_array(p[index])
+        assert sum(orb_array) == 1  # 目前所有条件都是1个珠子，出问题再改
+        orb_id = orb_array.index(1)
+        cond_map['order'].append(orb_id)
+        if orb_id not in cond_map['orb']:
+            cond_map['orb'][orb_id] = 1
+        else:
+            cond_map['orb'][orb_id] += 1
+            cond_map['all_one'] = False
+
+    cond_req = p[4]
+    cond_max = len(cond_map['order'])
+    atk_times = get_times(p[5])
+    d_rate = p[6]
+
+    # 只用一种宝珠的场合
+    if len(cond_map['orb']) == 1:
+        orb_id = cond_map['order'][0]
+        result['desc_cn'].append(f'消除{get_orb_text(orb_id)}{cond_req}COMBO以上时，{get_pet_status_text(0, atk_times, 0)}'
+                                 f'{f"，受到的伤害减少{d_rate}%" if d_rate > 0 else ""}')
+    elif cond_map['all_one']:
+        orb_array_text = ''.join([get_orb_text(orb_id) for orb_id in cond_map['order']])
+        if cond_max == cond_req:
+            result['desc_cn'].append(f'{orb_array_text}同时攻击时，{get_pet_status_text(0, atk_times, 0)}'
+                                     f'{f"，受到的伤害减少{d_rate}%" if d_rate > 0 else ""}')
+        else:
+            if cond_req == 1:
+                result['desc_cn'].append(f'消除{orb_array_text}中任意1种时，{get_pet_status_text(0, atk_times, 0)}'
+                                         f'{f"，受到的伤害减少{d_rate}%" if d_rate > 0 else ""}')
+            else:
+                raise Exception('未处理的分支')
+            # result['desc_cn'].append(f'{orb_array_text}中的{cond_req}种同时攻击时进行追打，造成{flat_add}点固定伤害')
+    else:
+        raise Exception('未处理的分支')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['atk'] = atk_times
+    leader_buff['d_rate'] = 100 - d_rate
+    update_leader_buff(result, leader_buff)
 
 
 # 一次性消除指定个数以上的珠子时，提升攻击力和减伤
@@ -316,6 +425,26 @@ def skill_type_185(result, skill_id, skill_data):
     update_leader_buff(result, leader_buff, pet_category)
 
 
+# 7x6面板，并按属性和类型提升全属性
+def skill_type_186(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 5)
+    hp_m = get_times(p[2])  # HP
+    atk_m = get_times(p[3])  # 攻击力
+    rec_m = get_times(p[4])  # 回复力
+
+    pet_category = convert_pet_category(p[0], p[1])
+
+    result['desc_cn'].append(f'宝珠盘变为7x6，{get_pet_category_text(pet_category)}宠物{get_pet_status_text(hp_m, atk_m, rec_m)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['hp'] = hp_m if hp_m > 0 else 1
+    leader_buff['atk'] = atk_m if atk_m > 0 else 1
+    leader_buff['rec'] = rec_m if rec_m > 0 else 1
+    update_leader_buff(result, leader_buff, pet_category)
+    leader_buff['detail']['big_board'] = [True]
+
+
 # 指定宝珠一次性消除X个以上时，增加攻击力和COMBO
 def skill_type_192(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
@@ -346,6 +475,34 @@ def skill_type_192(result, skill_id, skill_data):
     update_leader_buff(result, leader_buff)
 
 
+# L型消除指定宝珠时，提升攻击力、回复力、减伤
+def skill_type_193(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 4)
+
+    orb_array = bitmap_to_flag_array(p[0])
+    atk_times = get_times(p[1])
+    rec_times = get_times(p[2])
+    d_rate = p[3]
+
+    if len(orb_array) == sum(orb_array):
+        result['desc_cn'].append(
+            f'以L形消除5个宝珠时，{get_pet_status_text(0, atk_times, rec_times)}'
+            f'，受到的伤害减少{d_rate}%' if d_rate > 0 else "")
+    else:
+        result['desc_cn'].append(
+                f'以L形消除5个{get_enable_orb_text(orb_array)}时，{get_pet_status_text(0, atk_times, rec_times)}'
+                f'，受到的伤害减少{d_rate}%' if d_rate > 0 else "")
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['atk'] = atk_times
+    leader_buff['rec'] = rec_times
+    leader_buff['d_rate'] = 100 - d_rate
+
+    update_leader_buff(result, leader_buff)
+    result['detail']['l_bonus'] = [True]
+
+
 # 指定宝珠同时攻击时，增加攻击力和COMBO
 def skill_type_194(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
@@ -370,3 +527,46 @@ def skill_type_194(result, skill_id, skill_data):
     leader_buff['atk'] = atk_times
     leader_buff['add_combo'] = add_combo
     update_leader_buff(result, leader_buff)
+
+
+# # 一次性消除指定属性的指定个数以上的珠子时，进行追打
+# def skill_type_200(result, skill_id, skill_data):
+#     p = list(skill_data[skill_id].params)
+#     add_zero(p, 3)
+#     orb_array = bitmap_to_flag_array(p[0])
+#     cond_req = p[1]
+#     flat_add = p[2]
+
+    # temp_text = []
+    # if len(orb_array) == sum(orb_array):
+    #     if has_extra:
+    #         temp_text.append(f'一次性消除任意一种宝珠{cond_req}个时，{get_pet_status_text(0, atk_base, 0)}')
+    #         if cond_max - cond_req == 1:
+    #             temp_text.append(f"，{cond_max}个时{atk_max}倍")
+    #         else:
+    #             temp_text.append(f"，每多1个额外{atk_per_orb}倍，最大{cond_max}个时{atk_max}倍")
+    #     else:
+    #         temp_text.append(f'一次性消除任意一种宝珠{cond_req}个以上时，{get_pet_status_text(0, atk_base, 0)}')
+    # elif sum(orb_array) == 1:
+    #     if has_extra:
+    #         temp_text.append(f'一次性消除{get_enable_orb_text(orb_array)}{cond_req}个时，{get_pet_status_text(0, atk_base, 0)}')
+    #         if cond_max - cond_req == 1:
+    #             temp_text.append(f"，{cond_max}个时{atk_max}倍")
+    #         else:
+    #             temp_text.append(f"，每多1个额外{atk_per_orb}倍，最大{cond_max}个时{atk_max}倍")
+    #     else:
+    #         temp_text.append(f'一次性消除{get_enable_orb_text(orb_array)}{cond_req}个以上时，{get_pet_status_text(0, atk_base, 0)}')
+    # else:
+    #     if has_extra:
+    #         temp_text.append(f'一次性消除{get_enable_orb_text(orb_array)}中任意一种{cond_req}个时，{get_pet_status_text(0, atk_base, 0)}')
+    #         if cond_max - cond_req == 1:
+    #             temp_text.append(f"，{cond_max}个时{atk_max}倍")
+    #         else:
+    #             temp_text.append(f"，每多1个额外{atk_per_orb}倍，最大{cond_max}个时{atk_max}倍")
+    #     else:
+    #         temp_text.append(f'一次性消除{get_enable_orb_text(orb_array)}中任意一种{cond_req}个以上时，{get_pet_status_text(0, atk_base, 0)}')
+    #
+    # result['desc_cn'].append(''.join(temp_text))
+    # leader_buff = get_blank_leader_buff()
+    # leader_buff['atk'] = atk_max
+    # update_leader_buff(result, leader_buff)
