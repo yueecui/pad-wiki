@@ -1,6 +1,16 @@
 from .skill_common import *
 
 
+# 当队长进副本时提升掉蛋率
+def skill_type_53(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 1)
+    times = get_times(p[0])
+
+    result['desc_cn'].append(f'作为队长进入地下城时，掉蛋率{times}倍（协力时无效）')
+    result['detail']['bonus_egg_drop'] = [times]
+
+
 # 当队长进副本时提升金币
 def skill_type_54(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)

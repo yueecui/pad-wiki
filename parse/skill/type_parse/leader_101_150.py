@@ -344,33 +344,43 @@ def skill_type_124(result, skill_id, skill_data):
     atk_base = get_times(p[6])  # 最低倍率
     atk_pre_level = get_times(p[7])  # 每额外一层的倍率
     atk_max = get_times(atk_base + atk_pre_level * (cond_max - cond_req), 1)
+    has_extra = bool(cond_max > cond_req and atk_max > atk_base)
 
+    temp_text = []
+    # 只有一种宝珠时，单类型宝珠打多COMBO
     if len(cond_map['orb']) == 1:
         orb_id = cond_map['order'][0]
-        if cond_max == cond_req:
-            result['desc_cn'].append(f'消除{get_orb_text(orb_id)}{cond_max}COMBO以上时，{get_pet_status_text(0, atk_base, 0)}')
+        if has_extra:
+            temp_text.append(f'消除{get_orb_text(orb_id)}{cond_req}COMBO时，{get_pet_status_text(0, atk_base, 0)}，每多1COMBO额外增加{atk_pre_level}倍，最大{cond_max}COMBO时{atk_max}倍')
         else:
-            result['desc_cn'].append(f'消除{get_orb_text(orb_id)}{cond_req}COMBO时，{get_pet_status_text(0, atk_base, 0)}，每多1COMBO额外增加{atk_pre_level}倍，最大{cond_max}COMBO时{atk_max}倍')
+            temp_text.append(f'消除{get_orb_text(orb_id)}{cond_max}COMBO以上时，{get_pet_status_text(0, atk_base, 0)}')
+    # 出现的属性都只出现了一次的时候（多属性同时攻击）
     elif cond_map['all_one']:
         orb_array_text = ''.join([get_orb_text(orb_id) for orb_id in cond_map['order']])
-        if cond_max == cond_req:
-            result['desc_cn'].append(f'{orb_array_text}同时攻击时，{get_pet_status_text(0, atk_base, 0)}')
-        elif cond_max - cond_req == 1:
-            # 目前好像没有这个
-            result['desc_cn'].append(f'{orb_array_text}中的{cond_req}种同时攻击时，{get_pet_status_text(0, atk_base, 0)}，{cond_max}种时{atk_max}倍')
+        if cond_req == 1:
+            temp_text.append(f'消除{orb_array_text}中任意1种时')
+        elif cond_req == cond_max:
+            temp_text.append(f'{orb_array_text}同时攻击时')
         else:
-            # 目前好像没有这个
-            result['desc_cn'].append(f'{orb_array_text}中的{cond_req}种同时攻击时，{get_pet_status_text(0, atk_base, 0)}，每多1种额外增加{atk_pre_level}倍，最大{cond_max}种时{atk_max}倍')
+            raise Exception('未处理分支')
+        temp_text.append(f'{get_pet_status_text(0, atk_base, 0)}')
+
+        if has_extra:
+            if cond_max - cond_req == 1:
+                temp_text.append(f'{cond_max}种时{atk_max}倍')
+            else:
+                temp_text.append(f'每多1种额外增加{atk_pre_level}倍，最大{cond_max}种时{atk_max}倍')
     else:
         orb_array_text = ''.join([get_orb_text(orb_id) for orb_id in cond_map['order']])
-        if cond_max == cond_req:
-            result['desc_cn'].append(f'消除{orb_array_text}组合时，{get_pet_status_text(0, atk_base, 0)}')
-        elif cond_max - cond_req == 1:
-            result['desc_cn'].append(f'消除{orb_array_text}中的{cond_req}组时，{get_pet_status_text(0, atk_base, 0)}，{cond_max}组时{atk_max}倍')
-        else:
-            # 目前好像没有这个
-            result['desc_cn'].append(f'消除{orb_array_text}中的{cond_req}组时，{get_pet_status_text(0, p[6], 0)}，每多1组额外增加{atk_pre_level}倍，最大{cond_max}组时{atk_max}倍')
+        assert cond_req > 1
+        temp_text.append(f'消除{orb_array_text}中的{cond_req}组时，{get_pet_status_text(0, atk_base, 0)}')
+        if has_extra:
+            if cond_max - cond_req == 1:
+                temp_text.append(f'{cond_max}组时{atk_max}倍')
+            else:
+                temp_text.append(f'每多1组额外增加{atk_pre_level}倍，最大{cond_max}组时{atk_max}倍')
 
+    result['desc_cn'].append('，'.join(temp_text))
     leader_buff = get_blank_leader_buff()
     leader_buff['atk'] = atk_max
     update_leader_buff(result, leader_buff)

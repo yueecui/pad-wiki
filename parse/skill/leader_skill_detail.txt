@@ -6,8 +6,18 @@ combo_status          # combo数大于等于X时有效果：combo数
 specific_combo_status   # combo数等于X时有效果：combo数
 cross_bonus         # 十字消除时额外奖励：True
 l_bonus         # L消除时额外奖励：True
-big_board       # 7x6面板：True
 multi_bonus     # 联机时额外奖励：True
-disable_drop     # 禁用掉落宝珠奖励：True
 remain_orb      # 消除宝珠后根据剩余宝珠数量追加攻击力：True
+kind_bonus      # 队员全为特定类型时奖励：类型ID
+bonus_egg_drop  # 掉蛋增加：倍率
+bonus_coin      # 掉钱增加：倍率
+bonus_rank_exp  # RANK经验增加：倍率
+immunity_poison  # 免疫中毒：True
+seal_recovery   # 能回复封印觉醒状态
+evo_bonus       # 特定进化类型强化：进化类型
+
+# 以下需要在最开头显示红字说明
+big_board       # 7x6面板：True
+disable_drop     # 禁用掉落宝珠奖励：True
 min_remove      # 最低消除需要的宝珠数量：需要宝珠数量
+flat_time       # 固定操作时间：固定时间

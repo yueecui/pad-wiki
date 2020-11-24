@@ -468,6 +468,27 @@ def skill_type_171(result, skill_id, skill_data):
     update_leader_buff(result, leader_buff)
 
 
+# 特定系列队员编成时，提升全属性
+def skill_type_175(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 6)
+    hp_times = get_times(p[3])  # HP
+    atk_times = get_times(p[4])  # 攻击力
+    rec_times = get_times(p[5])  # 回复力
+
+    pet_kind = p[0]
+
+    # 文本交给lua处理
+    result['desc_cn'].append(f'队员编成均为<PetKind:{pet_kind}>时，{get_pet_status_text(hp_times, atk_times, rec_times)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['hp'] = hp_times
+    leader_buff['atk'] = atk_times
+    leader_buff['rec'] = rec_times
+    update_leader_buff(result, leader_buff)
+    result['detail']['kind_bonus'] = [pet_kind]
+
+
 # 不计掉落宝珠，并按属性和类型提升全属性，并且转珠后剩余的宝珠数量越少提升攻击力越多
 def skill_type_177(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
@@ -500,6 +521,30 @@ def skill_type_177(result, skill_id, skill_data):
     update_leader_buff(result, leader_buff, pet_category)
     result['detail']['disable_drop'] = [True]
     result['detail']['remain_orb'] = [True]
+
+
+# 固定操作时间，按属性和类型提升全属性
+def skill_type_178(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 6)
+    hp_times = get_times(p[3])  # HP
+    atk_times = get_times(p[4])  # 攻击力
+    rec_times = get_times(p[5])  # 回复力
+
+    pet_category = convert_pet_category(p[1], p[2])
+
+    flat_time = p[0]
+
+    # 文本交给lua处理
+    if pet_category['total'] > 0:
+        result['desc_cn'].append(f'{get_pet_category_text(pet_category)}的{get_pet_status_text(hp_times, atk_times, rec_times)}')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['hp'] = hp_times
+    leader_buff['atk'] = atk_times
+    leader_buff['rec'] = rec_times
+    update_leader_buff(result, leader_buff, pet_category)
+    result['detail']['flat_time'] = [flat_time]
 
 
 # 一次性消除指定个数以上的珠子时，提升攻击力和减伤
@@ -709,6 +754,40 @@ def skill_type_194(result, skill_id, skill_data):
     leader_buff['atk'] = atk_times
     leader_buff['add_combo'] = add_combo
     update_leader_buff(result, leader_buff)
+
+
+# 消除十字提升COMBO
+def skill_type_197(result, skill_id, skill_data):
+    result['desc_cn'].append(f'毒伤害无效')
+    result['detail']['immunity_poison'] = [True]
+
+
+# 回复宝珠回复量达标时，提升攻击力，减伤，回复觉醒无效
+def skill_type_198(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 4)
+    cond_req = p[0]
+    atk_times = get_times(p[1])
+    d_rate = p[2]
+    seal_recovery = p[3]
+
+    temp_text = [f'{get_orb_text(5)}产生的回复量大于{cond_req}时']
+    if atk_times > 0:
+        temp_text.append(f'{get_pet_status_text(0, atk_times, 0)}')
+    if d_rate > 0:
+        temp_text.append(f'受到的伤害减少{d_rate}%')
+    if seal_recovery == 9999:
+        temp_text.append(f'觉醒无效状态全回复')
+    elif seal_recovery > 0:
+        temp_text.append(f'觉醒无效状态回复{seal_recovery}回合')
+
+    result['desc_cn'].append('，'.join(temp_text))
+    leader_buff = get_blank_leader_buff()
+    leader_buff['atk'] = atk_times
+    leader_buff['d_rate'] = d_rate
+    update_leader_buff(result, leader_buff)
+    if seal_recovery > 0:
+        result['detail']['seal_recovery'] = [seal_recovery]
 
 
 # 若干色同时攻击时

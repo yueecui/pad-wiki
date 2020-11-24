@@ -4,7 +4,7 @@ from danteng_lib import load_json
 from SaveToExcel import save_to_excel
 from excel_exporter.header import CARD_DATA_HEADER, SKILL_DATA_HEADER
 
-BASE_PATH = 'data'
+BASE_PATH = 'raw_data'
 CARD_DATA_FILENAME = 'download_card_data.json'
 SKILL_DATA_FILENAME = 'download_skill_data.json'
 
@@ -89,5 +89,5 @@ def export_skill_data() -> None:
 
 
 if __name__ == '__main__':
-    # export_card_data()
+    export_card_data()
     export_skill_data()
