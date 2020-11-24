@@ -111,7 +111,7 @@ def list_to_orb_array(orb_list):
     for orb_id in orb_list:
         if orb_id == -1:
             break
-        orb_array[orb_id] = True
+        orb_array[orb_id] = 1
     return orb_array
 
 
@@ -288,6 +288,7 @@ SHAPE_CODE_MAP = {
     '0-0-1-1-7': ['在盘面左下角以L形', 1],
     '0-0-32-32-56': ['在盘面右下角以L形', 1],
     '56-32-33-1-7': ['在盘面右上角和左下角以L形', 1],
+    '7-1-33-32-56': ['在盘面左上角和右下角以L形', 1],
 
     '7-7-7-0-0': ['在盘面左上角以3x3矩形（7x6盘时是3x4）', 2],
     '0-0-7-7-7': ['在盘面左下角以3x3矩形（7x6盘时是3x4）', 2],
@@ -378,6 +379,7 @@ def get_pet_category_text(pet_category):
 def get_blank_leader_buff():
     return {
         'hp': 1,  # HP倍率
+        'ehp': 1,   # 有效HP倍率（HP倍率与全属性减伤共同计算）
         'atk': 1,  # 攻击力倍率
         'rec': 1,  # 回复力倍率
         'd_rate': 100,  # 受到伤害的百分比，注意分属性的是单独的
@@ -420,6 +422,8 @@ def union_leader_buff(base_leader_buff, merge_leader_buff):
             if rate != first_rate:
                 base_leader_buff['d_rate'] = -1
                 break
+    # 计算有效血量
+    base_leader_buff['ehp'] = base_leader_buff['hp'] / (base_leader_buff['d_rate'] / 100)
 
 
 # 更新队长技能的效果

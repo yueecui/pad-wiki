@@ -38,15 +38,3 @@ class Curve(Printable):
     def value_at(self, level: int):
         f = 1 if self.max_level == 1 else ((level - 1) / (self.max_level - 1))
         return int(round(self.min_value + (self.max_value - self.min_value) * math.pow(f, self.scale)))
-
-
-# 进化类型
-class EvoType(Enum):
-    BASE = 0
-    NORMAL = 1              # 进化
-    ULT = 11                # 究极进化
-    SUPER_ULT = 12          # 超究极进化
-    REBIRTH = 21            # 转生进化
-    SUPER_REBIRTH = 22      # 超转生进化
-    DOT = 31                # 点阵进化
-    ASSIST = 41             # 武装化

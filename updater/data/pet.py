@@ -1,9 +1,10 @@
 # 整理card数据
 from typing import Dict, Any
-from common.pad_types import CardId, PetInfo, EvoType
+from common.pad_types import CardId, PetInfo
 from parse.raw.skill import load_skill_data
 from parse.raw.card import load_card_data
 from parse.skill import *
+import json
 
 
 def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
@@ -36,7 +37,8 @@ def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
         },
         'awakenings': card_info.awakenings,
         'super_awakenings': card_info.super_awakenings,
-        # 'active_skill': get_active_skill_detail(card_info.active_skill_id, skill_data),
+        'awakenings_C': [],
+        'active_skill': get_active_skill_detail(card_info.active_skill_id, skill_data),
         'leader_skill': get_leader_skill_detail(card_info.leader_skill_id, skill_data),
         'value': {
             'xp_per_level': card_info.feed_xp_per_level,
@@ -70,8 +72,11 @@ def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
         'search_text': card_info.search_text,
         'data_type': 'pet',
     })
-    z = 1
-    # print(pet_info['name'])
+
+    for super_a_sk in pet_info['super_awakenings']:
+        temp_a_sk_list = pet_info['awakenings'].copy()
+        temp_a_sk_list.append(super_a_sk)
+        pet_info['awakenings_C'].append(temp_a_sk_list)
 
     return pet_info
 
@@ -87,26 +92,26 @@ def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
 # 41: 武装化
 def check_evo_type(card_info, card_data):
     if len(card_info.awakenings) > 0 and card_info.awakenings[0] == 49:
-        return EvoType.ASSIST  # 装备化
+        return 41  # 装备化
     if card_info.name.find('ドット・') == 0 and card_info.series_id != 500:  # 500是进化素材（点阵希石）
-        return EvoType.DOT  # 点阵进化
+        return 31  # 点阵进化
     if card_info.base_id == card_info.id:
-        return EvoType.BASE  # BASE卡
+        return 0  # BASE卡
     father_info = card_data[card_info.father_id]
     if card_info.is_ult:
         if father_info.is_ult:
-            return EvoType.SUPER_ULT  # 超究极进化
+            return 12  # 超究极进化
         else:
-            return EvoType.ULT  # 究极进化
+            return 11  # 究极进化
     else:
         if father_info.is_ult:
-            return EvoType.REBIRTH  # 转生
+            return 21  # 转生
         else:
             # 判断一下父级是否为转生
             if check_evo_type(father_info, card_data) == 21:
-                return EvoType.SUPER_REBIRTH  # 超转生
+                return 22  # 超转生
             else:
-                return EvoType.NORMAL  # 普通进化
+                return 1  # 普通进化
 
 
 # pet只包括玩家可用的卡
