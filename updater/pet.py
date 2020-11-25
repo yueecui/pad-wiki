@@ -8,8 +8,6 @@ import json
 
 
 def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
-    # if card_id != 6596:
-    #     return
     card_info = card_data[card_id]
     pet_info = PetInfo({
         'id': card_id,
