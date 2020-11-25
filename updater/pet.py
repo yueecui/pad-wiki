@@ -3,10 +3,14 @@ import os
 from parse.pet_data import get_all_pet_data
 from huijiWiki import HuijiWiki
 from config import WIKITEXT_PATH
+from config_loader import config_loader
 
 
 def update_all_data():
-    pad_wiki = login_in_wiki()
+    # 读取配置文件
+    cfg = config_loader('config.ini')
+
+    pad_wiki = login_in_wiki(cfg)
     update_pet_data(pad_wiki)
 
 
@@ -38,18 +42,18 @@ def update_pet_data(pad_wiki):
     return show_page_update_list
 
 
-def login_in_wiki():
+def login_in_wiki(cfg):
     # 更新数据的话，先登录wiki
     pad_wiki = HuijiWiki('pad', 'PADWIKI')
-    if not pad_wiki.login('Yuee_bot', '123654abC'):
+    if not pad_wiki.login(cfg['WIKI']['username'], cfg['WIKI']['password']):
         print('登录失败')
         return
     if not pad_wiki.get_edit_token():
         print('获取token失败')
         return
     # 设置线程数
-    pad_wiki.set_thread_number(10)
-    pad_wiki.set_sleep_time(3)
+    pad_wiki.set_thread_number(cfg['WIKI'].get('thread_number') or 10)
+    pad_wiki.set_sleep_time(cfg['WIKI'].get('sleep_time') or 3)
 
     return pad_wiki
 
