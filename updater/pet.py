@@ -1,128 +1,59 @@
-# 整理card数据
-from typing import Dict, Any
-from common.pad_types import CardId, PetInfo
-from parse.raw.skill import load_skill_data
-from parse.raw.card import load_card_data
-from parse.skill import *
 import json
+import os
+from parse.pet_data import get_all_pet_data
+from huijiWiki import HuijiWiki
+from config import WIKITEXT_PATH
 
 
-def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
-    card_info = card_data[card_id]
-    pet_info = PetInfo({
-        'id': card_id,
-        'name': card_info.name,
-        'element': [card_info.element_id, card_info.sub_element_id],
-        'type': [card_info.type_1_id, card_info.type_2_id, card_info.type_3_id],
-        'rarity': card_info.rarity,
-        'cost': card_info.cost,
-
-        'max_level': card_info.max_level,
-        'xp_type': card_info.xp_type,
-        'xp_max': card_info.xp_curve().value_at(card_info.max_level),
-        'params': {
-            'hp_min': card_info.hp_min,
-            'hp_max': card_info.hp_max,
-            'hp_scale': card_info.hp_scale,
-
-            'atk_min': card_info.atk_min,
-            'atk_max': card_info.atk_max,
-            'atk_scale': card_info.atk_scale,
-
-            'rec_min': card_info.rec_min,
-            'rec_max': card_info.rec_max,
-            'rec_scale': card_info.rec_scale,
-        },
-        'awakenings': card_info.awakenings,
-        'super_awakenings': card_info.super_awakenings,
-        'awakenings_C': [],
-        'active_skill': get_active_skill_detail(card_info.active_skill_id, skill_data),
-        'leader_skill': get_leader_skill_detail(card_info.leader_skill_id, skill_data),
-        'value': {
-            'xp_per_level': card_info.feed_xp_per_level,
-            'gold_per_level': card_info.sell_gold_per_level,
-            'monster_point': card_info.sell_mp,
-        },
-        'base_id': card_info.base_id,
-        'series_id': card_info.series_id,
-        'collab_id': card_info.collab_id,
-        'evo': {
-            'is_ult': card_info.is_ult,
-            'type': check_evo_type(card_info, card_data),  # 测试中
-            'father_id': card_info.father_id,
-            'mat': [card_info.evo_mat_id_1, card_info.evo_mat_id_2, card_info.evo_mat_id_3,
-                    card_info.evo_mat_id_4, card_info.evo_mat_id_5],
-        },
-        'other': {
-            'usable': card_info.assist_only_flag,
-            'inheritable': card_info.inheritable,
-            'take_assists': card_info.take_assists,
-            'latent_slot_unlockable': card_info.latent_slot_unlock_flag,
-
-            'is_collab': card_info.is_collab_flag,
-            'stackable': card_info.is_stackable,
-            'latent': card_info.latent_on_feed,
-
-            'voice_id': card_info.voice_id,
-            'orb_skin_id': card_info.orb_skin_id,
-            'linked_id': card_info.linked_monster_no,
-        },
-        'search_text': card_info.search_text,
-        'data_type': 'pet',
-    })
-
-    for super_a_sk in pet_info['super_awakenings']:
-        temp_a_sk_list = pet_info['awakenings'].copy()
-        temp_a_sk_list.append(super_a_sk)
-        pet_info['awakenings_C'].append(temp_a_sk_list)
-
-    return pet_info
+def update_all_data():
+    pad_wiki = login_in_wiki()
+    update_pet_data(pad_wiki)
 
 
-# 进化类型
-# 0: base
-# 1: 进化
-# 11: 究极进化
-# 12: 超究极进化
-# 21: 转生进化
-# 22: 超转生进化
-# 31: 点阵进化
-# 41: 武装化
-def check_evo_type(card_info, card_data):
-    if len(card_info.awakenings) > 0 and card_info.awakenings[0] == 49:
-        return 41  # 装备化
-    if card_info.name.find('ドット・') == 0 and card_info.series_id != 500:  # 500是进化素材（点阵希石）
-        return 31  # 点阵进化
-    if card_info.base_id == card_info.id:
-        return 0  # BASE卡
-    father_info = card_data[card_info.father_id]
-    if card_info.is_ult:
-        if father_info.is_ult:
-            return 12  # 超究极进化
-        else:
-            return 11  # 究极进化
-    else:
-        if father_info.is_ult:
-            return 21  # 转生
-        else:
-            # 判断一下父级是否为转生
-            if check_evo_type(father_info, card_data) == 21:
-                return 22  # 超转生
-            else:
-                return 1  # 普通进化
+def update_pet_data(pad_wiki):
+    pet_data = get_all_pet_data()
+    show_page_update_list = []
+
+    # 生成数据
+    for pet_id, pet_info in pet_data.items():
+        # 控制上传部分
+        data_page_title = 'Data:Pet/%04d.json' % pet_id
+        data_page_content = json.dumps(pet_info, ensure_ascii=False)
+        data_page_savepath = os.path.join(WIKITEXT_PATH, '%s.txt' % HuijiWiki.filename_fix(data_page_title))
+
+        # page_title = 'Pet/%04d' % pet_id
+        # page_content = '{{PetPage}}' % pet_id
+        # page_savepath = os.path.join(WIKITEXT_PATH, '%s.txt' % HuijiWiki.filename_fix(page_title))
+        # saved_page_content, read_result = read_file(page_savepath)
+        # if not read_result or saved_page_content != page_content:
+        #     show_page_update_list.append(OrderedDict([
+        #         ('title', page_title),
+        #         ('content', page_content),
+        #         ('save_path', page_savepath),
+        #     ]))
+
+        # 更新页面
+        pad_wiki.edit(data_page_title, data_page_content, filepath=data_page_savepath, compare_flag=True)
+    pad_wiki.wait_threads()
+    return show_page_update_list
 
 
-# pet只包括玩家可用的卡
-def get_pet_data() -> Dict[CardId, PetInfo]:
-    card_data = load_card_data()
-    skill_data = load_skill_data()
+def login_in_wiki():
+    # 更新数据的话，先登录wiki
+    pad_wiki = HuijiWiki('pad', 'PADWIKI')
+    if not pad_wiki.login('Yuee_bot', '123654abC'):
+        print('登录失败')
+        return
+    if not pad_wiki.get_edit_token():
+        print('获取token失败')
+        return
+    # 设置线程数
+    pad_wiki.set_thread_number(10)
+    pad_wiki.set_sleep_time(3)
 
-    pet_data = {}
+    return pad_wiki
 
-    # 只需要玩家可用的卡
-    for card_id in card_data.keys():
-        if not card_data[card_id].ownable:
-            continue
-        pet_data[card_id] = clean_pet_info(card_id, card_data, skill_data)
 
-    return pet_data
+if __name__ == '__main__':
+    update_all_data()
+

@@ -58,7 +58,6 @@ def generate_monster_icon():
                 print(f'图片[{icon_info["file_name"]}]保存完成！')
 
 
-
 def get_monster_icon_info(card_info):
     folder = '%04d' % int((card_info.id-1) / 1000)
     path = os.path.join(IMAGE_BASE_PATH, 'pet_icon', folder)
@@ -79,9 +78,7 @@ def get_monster_icon_info(card_info):
     }
 
 
-
-
 if __name__ == '__main__':
-    # update_cards_image()
+    update_cards_image()
     generate_monster_icon()
 
