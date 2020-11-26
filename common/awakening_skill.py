@@ -91,6 +91,16 @@ AWAKENING_SKILL_MAP = {
 }
 
 
+def get_awakening_skill_replace_map():
+    replace_map = {}
+    for aw_sk_id, aw_sk_info in AWAKENING_SKILL_MAP.items():
+        if aw_sk_info.get('plus'):
+            replace_map[aw_sk_info['plus']['id']] = []
+            for i in range(aw_sk_info['plus']['v']):
+                replace_map[aw_sk_info['plus']['id']].append(aw_sk_id)
+    return replace_map
+
+
 class Awakening(Enum):
     ENHANCED_HP = 1  # HP+500
     ENHANCED_ATK = 2  # 攻击力+100
