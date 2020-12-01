@@ -88,7 +88,7 @@ def skill_type_126(result, skill_id, skill_data):
         result['desc_cn'].append(f'{p[1]}回合内，{get_enable_orb_text(up_list)}掉落率提升{p[3]}%')
     else:
         result['desc_cn'].append(f'{p[1]}～{p[2]}回合内，{get_enable_orb_text(up_list)}掉落率提升{p[3]}%')
-    result['detail']['drop_rate_up'] = [p[1], p[2], p[3], up_list]
+    result['detail']['orb_rate_up'] = [p[1], p[2], p[3], up_list]
 
 
 # 列转珠

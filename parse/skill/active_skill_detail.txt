@@ -31,9 +31,10 @@ turn_from
 turn_to
 orb_power
 unlock_all                  # 解除锁定：True
-orb_lock                  # 锁定宝珠：宝珠类型表
-orb_lock_drop             # 宝珠以锁定形态掉落：回合数，宝珠类型表
+orb_lock                  # 锁定宝珠：[宝珠类型表]
+orb_lock_drop             # 宝珠以锁定形态掉落：回合数，[宝珠类型表]
 orb_roulette               # 宝珠轮盘：回合数，间隔时间，数量
+orb_rate_up             #   宝珠掉率提升：最小回合，最大回合，提升率，[宝珠列表]
 
 # 强化效果
 atk_buff                # 影响ATK的buff（也包括回复力）：特有格式，参考：get_blank_atk_buff_map

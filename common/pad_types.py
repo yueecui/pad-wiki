@@ -11,6 +11,43 @@ SkillId = NewType('SkillId', int)
 PetInfo = NewType('PetInfo', dict)
 
 
+ELEMENT_MAP = {
+    0: '火',
+    1: '水',
+    2: '木',
+    3: '光',
+    4: '暗',
+}
+
+TYPE_MAP = {
+    0: '进化用',
+    1: '平衡',
+    2: '体力',
+    3: '回复',
+    4: '龙',
+    5: '神',
+    6: '攻击',
+    7: '恶魔',
+    8: '机械',
+    12: '能力觉醒用',
+    14: '强化合成用',
+    15: '贩卖用',
+}
+
+ORB_MAP = {
+    0: '火',
+    1: '水',
+    2: '木',
+    3: '光',
+    4: '暗',
+    5: '回复',
+    6: '废',
+    7: '毒',
+    8: '猛毒',
+    9: '炸弹',
+}
+
+
 class Printable(object):
     """Simple way to make an object printable."""
     pass
