@@ -49,11 +49,9 @@ def add_zero(array, length):
 # 获得一个基础的宝珠转换类型表
 def get_blank_turn_type_map():
     return {
-        'random': 0,  # 随机生成数量
         'row': False,  # 行
         'column': False,  # 列
         'all': False,  # 洗版
-        'refresh': False,  # 刷新
         'shape': False,  # 形状
     }
 

@@ -93,7 +93,7 @@ def skill_type_10(result, skill_id, skill_data):
     result['desc_cn'].append(f'全画面宝珠刷新')
     if 'turn_type' not in result['detail']:
         result['detail']['turn_type'] = get_blank_turn_type_map()
-    result['detail']['turn_type']['refresh'] = True
+    result['detail']['orb_refresh'] = [True]
 
 
 # 威吓

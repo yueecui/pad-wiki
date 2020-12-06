@@ -184,7 +184,6 @@ def skill_type_141(result, skill_id, skill_data):
 
     if 'turn_type' not in result['detail']:
         result['detail']['turn_type'] = get_blank_turn_type_map()
-    result['detail']['turn_type']['random'] = p[0]
     if 'turn_to' not in result['detail']:
         result['detail']['turn_to'] = bitmap_to_flag_array(0)
     result['detail']['turn_to'] = union_array(result['detail']['turn_to'], to_list)
