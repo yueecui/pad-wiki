@@ -66,12 +66,17 @@ class Curve(Printable):
                  min_value: int,
                  max_value: int = None,
                  scale: float = 1.0,
-                 max_level: int = 10):
+                 max_level: int = 10,
+                 limit_mult: int = 0):
         self.min_value = min_value
         self.max_value = max_value or min_value * max_level
         self.scale = scale
         self.max_level = max(max_level, 1)
+        self.limit_mult = limit_mult / 10
 
     def value_at(self, level: int):
-        f = 1 if self.max_level == 1 else ((level - 1) / (self.max_level - 1))
-        return int(round(self.min_value + (self.max_value - self.min_value) * math.pow(f, self.scale)))
+        if level <= self.max_level:
+            f = 1 if self.max_level == 1 else ((level - 1) / (self.max_level - 1))
+            return int(round(self.min_value + (self.max_value - self.min_value) * math.pow(f, self.scale)))
+        else:
+            pass

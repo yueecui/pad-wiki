@@ -18,18 +18,18 @@ rec_heal                # 按回复力比例回复：回复倍率
 team_rec_heal                # 按队伍回复力比例回复：回复倍率
 percent_heal            # 百分比回复：回复百分比
 percent_hot            # 每回合百分比回复：回复百分比
+awakening_heal          # 根据指定觉醒数回血
+
 bind_heal               # 绑定回复：回复回合数
 as_invalid_heal            # 觉醒无效回复：回复回合数
 drop_ban_heal               # 无法消珠状态回复：回复回合数
 absorb_heal             # 伤害技能附带的吸收效果：吸收百分比
-consume_hp              # 消耗自身HP：消耗后的百分比（0时为消耗到剩下1）
-awakening_heal          # 根据指定觉醒数回血
 
 # 珠子效果
 turn_type
 turn_from
 turn_to
-orb_power
+orb_power / orb_power_m
 unlock_all                  # 解除锁定：True
 orb_lock                  # 锁定宝珠：[宝珠类型表]
 orb_lock_drop             # 宝珠以锁定形态掉落：回合数，[宝珠类型表]
@@ -50,7 +50,7 @@ damage_absorb_invalid       # 伤害吸收无效：True
 damage_immunity_invalid       # 伤害无效贯通：True
 
 # 伤害减免
-all_damage_cut              # 受到的特定属性伤害减少，100时免疫：回合数，减伤率
+all_damage_cut              # 受到的全属性伤害减少，100时免疫：回合数，减伤率
 ele_damage_cut              # 受到的特定属性伤害减少，100时免疫：回合数，属性，减伤率（目前都是100）
 awakening_cut      # 根据觉醒数减少受到伤害
 
@@ -64,3 +64,4 @@ enemy_ele_change            # 敌人属性变化：属性
 no_drop_combo               # 掉落宝珠不算combo：回合数
 random_effect               # 随机效果：True，随机的效果不会进入搜索器
 skill_seal                  # 封印自己技能：回合数
+consume_hp              # 消耗自身HP：消耗后的百分比（0时为消耗到剩下1）

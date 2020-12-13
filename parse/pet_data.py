@@ -1,11 +1,11 @@
 # 整理card数据
 from typing import Dict, Any
-from common.pad_types import CardId, PetInfo
+from common.pad_types import CardId, PetInfo, Curve
 from common.awakening_skill import get_awakening_skill_replace_map
 from parse.raw.skill import load_skill_data
 from parse.raw.card import load_card_data
 from parse.skill import *
-import json
+import math
 
 AWAKENING_SKILL_REPLACE_MAP = get_awakening_skill_replace_map()
 
@@ -27,14 +27,20 @@ def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
             'hp_min': card_info.hp_min,
             'hp_max': card_info.hp_max,
             'hp_scale': card_info.hp_scale,
+            'hp_limit': 0,
 
             'atk_min': card_info.atk_min,
             'atk_max': card_info.atk_max,
             'atk_scale': card_info.atk_scale,
+            'atk_limit': 0,
 
             'rec_min': card_info.rec_min,
             'rec_max': card_info.rec_max,
             'rec_scale': card_info.rec_scale,
+            'rec_limit': 0,
+
+            'max_score': card_info.hp_max / 10 + card_info.atk_max / 5 + card_info.rec_max / 3,
+            'limit_score': 0,
         },
         'awakenings': card_info.awakenings,
         'super_awakenings': card_info.super_awakenings,
@@ -69,6 +75,7 @@ def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
             'stackable': card_info.is_stackable,
             'latent': card_info.latent_on_feed,
 
+            'limit_mult': card_info.limit_mult,
             'voice_id': card_info.voice_id,
             'orb_skin_id': card_info.orb_skin_id,
             'linked_id': card_info.linked_monster_no,
@@ -76,6 +83,12 @@ def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
         'search_text': card_info.search_text,
         'data_type': 'pet',
     })
+
+    if card_info.limit_mult > 0:
+        pet_info['params']['hp_limit'] = math.ceil(pet_info['params']['hp_max'] * (100 + card_info.limit_mult)/100)
+        pet_info['params']['atk_limit'] = math.ceil(pet_info['params']['atk_max'] * (100 + card_info.limit_mult) / 100)
+        pet_info['params']['rec_limit'] = math.ceil(pet_info['params']['rec_max'] * (100 + card_info.limit_mult) / 100)
+        pet_info['params']['limit_score'] = pet_info['params']['hp_limit'] / 10 + pet_info['params']['atk_limit'] / 5 + pet_info['params']['rec_limit'] / 3,
 
     for aw_sk_id in pet_info['awakenings']:
         if aw_sk_id in AWAKENING_SKILL_REPLACE_MAP:
@@ -85,8 +98,14 @@ def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
 
     for super_aw_sk_id in pet_info['super_awakenings']:
         temp_aw_sk_list = pet_info['search_awakenings']['base'].copy()
-        temp_aw_sk_list.append(super_aw_sk_id)
-        pet_info['search_awakenings']['super'].append(temp_aw_sk_list)
+        if super_aw_sk_id in AWAKENING_SKILL_REPLACE_MAP:
+            temp_aw_sk_list.extend(AWAKENING_SKILL_REPLACE_MAP[super_aw_sk_id])
+        else:
+            temp_aw_sk_list.append(super_aw_sk_id)
+        pet_info['search_awakenings']['super'].append({
+            'id': super_aw_sk_id,
+            'sl': temp_aw_sk_list,
+        })
 
     return pet_info
 
@@ -133,6 +152,8 @@ def get_all_pet_data() -> Dict[CardId, PetInfo]:
 
     # 只需要玩家可用的卡
     for card_id in card_data.keys():
+        # if card_id != 6569:
+        #     continue
         if not card_data[card_id].ownable:
             continue
         pet_data[card_id] = clean_pet_info(card_id, card_data, skill_data)

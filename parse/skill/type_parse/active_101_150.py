@@ -36,7 +36,6 @@ def skill_type_117(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
     add_zero(p, 5)
     p[1] = get_times(p[1])
-    p[3] = get_times(p[3])
 
     temp_text = []
     # 三种加血方式只写一种
@@ -98,7 +97,7 @@ def skill_type_127(result, skill_id, skill_data):
 
     if 'turn_type' not in result['detail']:
         result['detail']['turn_type'] = get_blank_turn_type_map()
-    result['detail']['turn_type']['column'] = True
+    result['detail']['turn_type'][1] = 1
     result['detail']['column_map'] = [0, 0, 0, 0, 0, 0]
     if 'turn_to' not in result['detail']:
         result['detail']['turn_to'] = bitmap_to_flag_array(0)
@@ -122,7 +121,7 @@ def skill_type_128(result, skill_id, skill_data):
 
     if 'turn_type' not in result['detail']:
         result['detail']['turn_type'] = get_blank_turn_type_map()
-    result['detail']['turn_type']['row'] = True
+    result['detail']['turn_type'][0] = 1
     result['detail']['row_map'] = [0, 0, 0, 0, 0]
     if 'turn_to' not in result['detail']:
         result['detail']['turn_to'] = bitmap_to_flag_array(0)
@@ -167,7 +166,7 @@ def skill_type_140(result, skill_id, skill_data):
         result['detail']['orb_power'] = get_blank_orb_buff_map()
     for orb_id in range(6):
         result['detail']['orb_power'][orb_id] = power_up_list[orb_id]
-    result['detail']['orb_power']['m'] = p[1]
+    result['detail']['orb_power_m'] = p[1]
 
 
 # 生成宝珠（复数属性版）
@@ -184,6 +183,7 @@ def skill_type_141(result, skill_id, skill_data):
 
     if 'turn_type' not in result['detail']:
         result['detail']['turn_type'] = get_blank_turn_type_map()
+    result['detail']['turn_type'][4] = 1
     if 'turn_to' not in result['detail']:
         result['detail']['turn_to'] = bitmap_to_flag_array(0)
     result['detail']['turn_to'] = union_array(result['detail']['turn_to'], to_list)

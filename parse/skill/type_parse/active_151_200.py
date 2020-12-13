@@ -31,7 +31,9 @@ def skill_type_154(result, skill_id, skill_data):
         result['detail']['turn_to'] = bitmap_to_flag_array(0)
     result['detail']['turn_to'] = union_array(result['detail']['turn_to'], to_list)
     if sum(result['detail']['turn_from']) == len(result['detail']['turn_from']):
-        result['detail']['all'] = True
+        result['detail']['turn_type'][2] = 1
+    else:
+        result['detail']['turn_type'][3] = 1
 
 
 # 根据队伍特定觉醒数量产生效果
@@ -81,7 +83,7 @@ def skill_type_168(result, skill_id, skill_data):
 def skill_type_172(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
     result['desc_cn'].append(f'所有宝珠解锁锁定')
-    result['detail']['unlock_all'] = [True]
+    result['detail']['unlock_all'] = True
 
 
 # 敌方buff无效
@@ -108,7 +110,7 @@ def skill_type_176(result, skill_id, skill_data):
     result['desc_cn'].append(f'{shape_info[0]}生成{orb(p[5])}宝珠')
     if 'turn_type' not in result['detail']:
         result['detail']['turn_type'] = get_blank_turn_type_map()
-    result['detail']['turn_type']['shape'] = True
+    result['detail']['turn_type'][5] = 1
     result['detail']['shape_map'] = p[0:5]
     result['detail']['shape_type'] = shape_info[1]
     if 'turn_to' not in result['detail']:
@@ -184,11 +186,13 @@ def skill_type_188(result, skill_id, skill_data):
 def skill_type_189(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
     result['desc_cn'].append(f'所有宝珠解锁锁定')
-    result['detail']['unlock_all'] = [True]
+    result['detail']['unlock_all'] = True
 
-    result['detail']['turn_type'] = get_blank_turn_type_map()
-    result['detail']['turn_type']['all'] = True
-    result['detail']['turn_to'] = bitmap_to_flag_array(0)
+    if 'turn_type' not in result['detail']:
+        result['detail']['turn_type'] = get_blank_turn_type_map()
+    result['detail']['turn_type'][2] = True
+    if 'turn_to' not in result['detail']:
+        result['detail']['turn_to'] = bitmap_to_flag_array(0)
     result['detail']['turn_to'][0] = 1
     result['detail']['turn_to'][1] = 1
     result['detail']['turn_to'][2] = 1

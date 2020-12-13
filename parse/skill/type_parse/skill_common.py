@@ -46,14 +46,17 @@ def add_zero(array, length):
         array.append(0)
 
 
-# 获得一个基础的宝珠转换类型表
+# 获得一个基础的宝珠转换类型表（作废）
 def get_blank_turn_type_map():
-    return {
-        'row': False,  # 行
-        'column': False,  # 列
-        'all': False,  # 洗版
-        'shape': False,  # 形状
-    }
+    return [0, 0, 0, 0, 0, 0]
+    # {
+    #     'row': False,  # 行
+    #     'column': False,  # 列
+    #     'all': False,  # 洗版
+    #     'color': False,  # 色转色
+    #     'any':  False,  # 额外生成
+    #     'shape': False,  # 形状
+    # }
 
 
 # 转换flag为对应表
@@ -206,36 +209,25 @@ def get_awakening_skill_info(aw_sk_array):
 # 获得一个空的攻击力buff表
 def get_blank_atk_buff_map():
     return {
-        0: 0,  # 火,
-        1: 0,  # 水,
-        2: 0,  # 木,
-        3: 0,  # 光
-        4: 0,  # 暗,
-        5: 0,  # 回复力
-        11: 0,  # 平衡,
-        12: 0,  # 体力,
-        13: 0,  # 回复,
-        14: 0,  # 龙,
-        15: 0,  # 神,
-        16: 0,  # 攻击,
-        17: 0,  # 恶魔,
-        18: 0,  # 机械,
+        # 填倍率
+        'ele': [0, 0, 0, 0, 0, 0],
+        'type': [0, 0, 0, 0, 0, 0, 0, 0, 0],  # 第一位不用
         't': 0,  # 回合数
-        'm': 0,  # 倍率
     }
 
 
 # 获得一个空的攻宝珠buff表
 def get_blank_orb_buff_map():
-    return {
-        0: 0,  # 火,
-        1: 0,  # 水,
-        2: 0,  # 木,
-        3: 0,  # 光,
-        4: 0,  # 暗,
-        5: 0,  # 心
-        'm': 0,  # 强化倍率
-    }
+    return [0, 0, 0, 0, 0, 0]
+    #
+    #     0: 0,  # 火,
+    #     1: 0,  # 水,
+    #     2: 0,  # 木,
+    #     3: 0,  # 光,
+    #     4: 0,  # 暗,
+    #     5: 0,  # 心
+    #     'm': 0,  # 强化倍率
+    # }
 
 
 # 形状描述表

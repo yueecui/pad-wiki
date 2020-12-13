@@ -79,6 +79,7 @@ def skill_type_9(result, skill_id, skill_data):
     result['desc_cn'].append(f'{orb(p[0])}变成{orb(p[1])}')
     if 'turn_type' not in result['detail']:
         result['detail']['turn_type'] = get_blank_turn_type_map()
+    result['detail']['turn_type'][3] = 1
     if 'turn_from' not in result['detail']:
         result['detail']['turn_from'] = bitmap_to_flag_array(0)
     result['detail']['turn_from'][p[0]] = 1
@@ -91,9 +92,7 @@ def skill_type_9(result, skill_id, skill_data):
 def skill_type_10(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)
     result['desc_cn'].append(f'全画面宝珠刷新')
-    if 'turn_type' not in result['detail']:
-        result['detail']['turn_type'] = get_blank_turn_type_map()
-    result['detail']['orb_refresh'] = [True]
+    result['detail']['orb_refresh'] = True
 
 
 # 威吓
@@ -120,6 +119,7 @@ def skill_type_20(result, skill_id, skill_data):
         result['desc_cn'].append(f'{orb(p[0])}变成{orb(p[1])}，{orb(p[2])}变成{orb(p[3])}')
     if 'turn_type' not in result['detail']:
         result['detail']['turn_type'] = get_blank_turn_type_map()
+    result['detail']['turn_type'][3] = 1
     if 'turn_from' not in result['detail']:
         result['detail']['turn_from'] = bitmap_to_flag_array(0)
     result['detail']['turn_from'][p[0]] = 1
@@ -174,4 +174,4 @@ def skill_type_50(result, skill_id, skill_data):
     if 'atk_buff' not in result['detail']:
         result['detail']['atk_buff'] = get_blank_atk_buff_map()
     result['detail']['atk_buff']['t'] = p[0]
-    result['detail']['atk_buff'][p[1]] = p[2]
+    result['detail']['atk_buff']['ele'][p[1]] = p[2]

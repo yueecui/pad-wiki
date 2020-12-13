@@ -134,7 +134,7 @@ def skill_type_209(result, skill_id, skill_data):
     add_combo = p[0]
 
     result['desc_cn'].append(f'以十字形式消除5个{get_orb_text(5)}时，额外加算{add_combo}COMBO')
-    result['detail']['cross_bonus'] = [True]
+    result['detail']['cross_bonus'] = True
     leader_buff = get_blank_leader_buff()
     leader_buff['add_combo'] = add_combo
     update_leader_buff(result, leader_buff)
@@ -148,7 +148,7 @@ def skill_type_210(result, skill_id, skill_data):
     add_combo = p[2]
 
     result['desc_cn'].append(f'以十字形式消除5个{get_enable_orb_text(orb_array)}时，额外加算{add_combo}COMBO')
-    result['detail']['cross_bonus'] = [True]
+    result['detail']['cross_bonus'] = True
     leader_buff = get_blank_leader_buff()
     leader_buff['add_combo'] = add_combo
     update_leader_buff(result, leader_buff)

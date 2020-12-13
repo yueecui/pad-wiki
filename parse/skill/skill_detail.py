@@ -106,7 +106,7 @@ def skill_type_118(result, skill_id, skill_data):
 
     result['desc_cn'].append(f'随机发动以下{len(p)}个技能之一')
     result['random_skill'] = []
-    result['detail']['random_effect'] = [True]
+    result['detail']['random_effect'] = True
     # 错误检查
     # 判断会重复同一个子技能多次的都是单体固定伤害
     for random_sk_id in p:

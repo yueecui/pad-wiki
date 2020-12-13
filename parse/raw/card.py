@@ -231,13 +231,13 @@ class Card(Printable):
                      self.enemy_skill_refs)
 
     def hp_curve(self) -> Curve:
-        return Curve(self.hp_min, self.hp_max, self.hp_scale, max_level=99)
+        return Curve(self.hp_min, self.hp_max, self.hp_scale, max_level=self.max_level, limit_mult=self.limit_mult)
 
     def atk_curve(self) -> Curve:
-        return Curve(self.atk_min, self.atk_max, self.atk_scale, max_level=99)
+        return Curve(self.atk_min, self.atk_max, self.atk_scale, max_level=self.max_level, limit_mult=self.limit_mult)
 
     def rec_curve(self) -> Curve:
-        return Curve(self.rec_min, self.rec_max, self.rec_scale, max_level=99)
+        return Curve(self.rec_min, self.rec_max, self.rec_scale, max_level=self.max_level, limit_mult=self.limit_mult)
 
     def xp_curve(self) -> Curve:
         return Curve(0, self.xp_type, self.xp_scale, max_level=99)

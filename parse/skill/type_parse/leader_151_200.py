@@ -19,7 +19,7 @@ def skill_type_151(result, skill_id, skill_data):
     leader_buff['d_rate'] = 100 - d_rate
 
     update_leader_buff(result, leader_buff)
-    result['detail']['cross_bonus'] = [True]
+    result['detail']['cross_bonus'] = True
 
 
 # 多人联机时提升全属性
@@ -39,7 +39,7 @@ def skill_type_155(result, skill_id, skill_data):
     leader_buff['atk'] = atk_times
     leader_buff['rec'] = rec_times
     update_leader_buff(result, leader_buff)
-    result['detail']['multi_bonus'] = [True]
+    result['detail']['multi_bonus'] = True
 
 
 # 消除十字提升伤害
@@ -71,7 +71,7 @@ def skill_type_157(result, skill_id, skill_data):
     else:
         raise Exception('未处理的情况')
 
-    result['detail']['cross_bonus'] = [True]
+    result['detail']['cross_bonus'] = True
     leader_buff = get_blank_leader_buff()
     leader_buff['atk'] = cond_map[0]["ele_times"] * cond_map[0]["ele_times"]
 
@@ -161,7 +161,7 @@ def skill_type_159(result, skill_id, skill_data):
 # 7x6面板
 def skill_type_162(result, skill_id, skill_data):
     # p = list(skill_data[skill_id].params)
-    result['detail']['big_board'] = [True]
+    result['detail']['big_board'] = True
 
 
 # 不计掉落宝珠，并按属性和类型提升全属性
@@ -192,7 +192,7 @@ def skill_type_163(result, skill_id, skill_data):
     leader_buff['rec'] = rec_times
     leader_buff['d_rate'] = 100 - d_rate
     update_leader_buff(result, leader_buff, pet_category)
-    result['detail']['disable_drop'] = [True]
+    result['detail']['disable_drop'] = True
 
 
 # 打出宝珠组合时，所有宠物增加攻击力和回复力，可增强
@@ -519,8 +519,8 @@ def skill_type_177(result, skill_id, skill_data):
     leader_buff['atk'] = atk_times + remain_atk_times_max
     leader_buff['rec'] = rec_times
     update_leader_buff(result, leader_buff, pet_category)
-    result['detail']['disable_drop'] = [True]
-    result['detail']['remain_orb'] = [True]
+    result['detail']['disable_drop'] = True
+    result['detail']['remain_orb'] = True
 
 
 # 固定操作时间，按属性和类型提升全属性
@@ -669,7 +669,7 @@ def skill_type_186(result, skill_id, skill_data):
     leader_buff['rec'] = rec_times
     leader_buff['d_rate'] = 100 - d_rate
     update_leader_buff(result, leader_buff, pet_category)
-    result['detail']['big_board'] = [True]
+    result['detail']['big_board'] = True
 
 
 # 指定宝珠一次性消除X个以上时，增加攻击力和COMBO
@@ -727,7 +727,7 @@ def skill_type_193(result, skill_id, skill_data):
     leader_buff['d_rate'] = 100 - d_rate
 
     update_leader_buff(result, leader_buff)
-    result['detail']['l_bonus'] = [True]
+    result['detail']['l_bonus'] = True
 
 
 # 指定宝珠同时攻击时，增加攻击力和COMBO
@@ -759,7 +759,7 @@ def skill_type_194(result, skill_id, skill_data):
 # 消除十字提升COMBO
 def skill_type_197(result, skill_id, skill_data):
     result['desc_cn'].append(f'毒伤害无效')
-    result['detail']['immunity_poison'] = [True]
+    result['detail']['immunity_poison'] = True
 
 
 # 回复宝珠回复量达标时，提升攻击力，减伤，回复觉醒无效

@@ -16,7 +16,7 @@ def skill_type_52(result, skill_id, skill_data):
     if 'orb_power' not in result['detail']:
         result['detail']['orb_power'] = get_blank_orb_buff_map()
     result['detail']['orb_power'][p[0]] = 1
-    result['detail']['orb_power']['m'] = p[1]
+    result['detail']['orb_power_m'] = p[1]
 
 
 # 对敌方1体造成固定伤害
@@ -74,11 +74,11 @@ def skill_type_71(result, skill_id, skill_data):
     result['desc_cn'].append(f'全部宝珠变成{get_enable_orb_text(to_list)}')
     if 'turn_type' not in result['detail']:
         result['detail']['turn_type'] = get_blank_turn_type_map()
+    result['detail']['turn_type'][2] = 1
     result['detail']['turn_from'] = bitmap_to_flag_array(1023)
     if 'turn_to' not in result['detail']:
         result['detail']['turn_to'] = bitmap_to_flag_array(0)
     result['detail']['turn_to'] = union_array(result['detail']['turn_to'], to_list)
-    result['detail']['all'] = True
 
 
 # 自残+对敌1体指定属性攻击
@@ -147,8 +147,7 @@ def skill_type_88(result, skill_id, skill_data):
     if 'atk_buff' not in result['detail']:
         result['detail']['atk_buff'] = get_blank_atk_buff_map()
     result['detail']['atk_buff']['t'] = p[0]
-    result['detail']['atk_buff']['m'] = p[2]
-    result['detail']['atk_buff'][p[1] + 10] = 1
+    result['detail']['atk_buff']['type'][p[1]] = p[2]
 
 
 # 双属性攻击力buff（也包括回复力）
@@ -161,9 +160,8 @@ def skill_type_90(result, skill_id, skill_data):
     if 'atk_buff' not in result['detail']:
         result['detail']['atk_buff'] = get_blank_atk_buff_map()
     result['detail']['atk_buff']['t'] = p[0]
-    result['detail']['atk_buff']['m'] = p[3]
-    result['detail']['atk_buff'][p[1]] = 1
-    result['detail']['atk_buff'][p[2]] = 1
+    result['detail']['atk_buff']['ele'][p[1]] = p[3]
+    result['detail']['atk_buff']['ele'][p[2]] = p[3]
 
 
 # 双强化宝珠
@@ -175,7 +173,7 @@ def skill_type_91(result, skill_id, skill_data):
         result['detail']['orb_power'] = get_blank_orb_buff_map()
     result['detail']['orb_power'][p[0]] = 1
     result['detail']['orb_power'][p[1]] = 1
-    result['detail']['orb_power']['m'] = p[2]
+    result['detail']['orb_power_m'] = p[2]
 
 
 # 双类型攻击力buff
@@ -187,9 +185,8 @@ def skill_type_92(result, skill_id, skill_data):
     if 'atk_buff' not in result['detail']:
         result['detail']['atk_buff'] = get_blank_atk_buff_map()
     result['detail']['atk_buff']['t'] = p[0]
-    result['detail']['atk_buff']['m'] = p[3]
-    result['detail']['atk_buff'][p[1] + 10] = 1
-    result['detail']['atk_buff'][p[2] + 10] = 1
+    result['detail']['atk_buff']['type'][p[1]] = p[3]
+    result['detail']['atk_buff']['type'][p[2]] = p[3]
 
 
 # 更换队长
