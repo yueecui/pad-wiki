@@ -9,9 +9,9 @@ kind_bonus      # 队员全为特定系列时奖励：系列ID
 evo_bonus       # 特定进化类型强化：进化类型
 
 counter_attack   # 反击：发动几率，倍率，属性
-bonus_egg_drop  # 掉蛋增加：倍率
-bonus_coin      # 掉钱增加：倍率
 bonus_rank_exp  # RANK经验增加：倍率
+bonus_coin      # 掉钱增加：倍率
+bonus_egg_drop  # 掉蛋增加：倍率
 immunity_poison  # 免疫中毒：True
 seal_recovery   # 条件下，觉醒无效状态回复
 multi_bonus     # 联机时额外奖励：True

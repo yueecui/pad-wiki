@@ -319,6 +319,7 @@ def get_pet_category_text(pet_category):
     for type_id in range(11, 26):
         if pet_category.get(type_id):
             category_list.append(f'{TYPE_MAP[type_id-10]}类')
+            enable_count += 1
     if enable_count == 12:
         return '所有'
 
@@ -367,7 +368,7 @@ def union_leader_buff(base_leader_buff, merge_leader_buff):
                     base_leader_buff[k][i] *= (merge_leader_buff[k][i] / 100)
                     if int(base_leader_buff[k][i]) == base_leader_buff[k][i]:
                         base_leader_buff[k][i] = int(base_leader_buff[k][i])
-            elif k == 'time':
+            else:
                 base_leader_buff[k] += merge_leader_buff[k]
     # 如果ele_d_rate为有效值，则d_rate置为-1
     if 'ele_d_rate' in base_leader_buff and base_leader_buff['d_rate'] != -1:
@@ -377,7 +378,10 @@ def union_leader_buff(base_leader_buff, merge_leader_buff):
                 base_leader_buff['d_rate'] = -1
                 break
     # 计算有效血量
-    base_leader_buff['ehp'] = base_leader_buff['hp'] / (base_leader_buff['d_rate'] / 100)
+    if base_leader_buff['d_rate'] == -1:
+        base_leader_buff['ehp'] = base_leader_buff['hp']
+    else:
+        base_leader_buff['ehp'] = base_leader_buff['hp'] / (base_leader_buff['d_rate'] / 100)
 
 
 # 更新队长技能的效果
