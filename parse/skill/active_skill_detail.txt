@@ -45,9 +45,9 @@ combo_buff            # 额外combos的buff：回合数，combos数
 power_orb_drop_rate     # 强化宝珠掉落几率：回合数，几率
 all_attack              # 攻击变为全体攻击：回合数
 counter_attack            # 进行反击：回合数，倍率，属性
-ele_absorb_invalid          # 属性吸收无效：True
-damage_absorb_invalid       # 伤害吸收无效：True
-damage_immunity_invalid       # 伤害无效贯通：True
+ele_absorb_invalid          # 属性吸收无效：回合数
+damage_absorb_invalid       # 伤害吸收无效：回合数
+damage_immunity_invalid       # 伤害无效贯通：回合数
 
 # 伤害减免
 all_damage_cut              # 受到的全属性伤害减少，100时免疫：回合数，减伤率
