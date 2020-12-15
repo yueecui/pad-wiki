@@ -13,7 +13,7 @@ def download_all_card_bc():
         if check_file_name_prefix(assets.file_name, 'cards_'):
             if download_bc(downloader, assets, 'cards'):
                 need_update_list.append(assets)
-
+    downloader.wait_threads()
     return need_update_list
 
 

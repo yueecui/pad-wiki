@@ -299,9 +299,10 @@ def convert_pet_category(ele_flag=0, type_flag=0):
 
 # 合并第二个宠物分类到第一个
 def union_pet_category(base_pet_category, merge_pet_category):
+    is_all = (merge_pet_category[0] + merge_pet_category[1] + merge_pet_category[2] + merge_pet_category[3] + merge_pet_category[4]) == 5
     for k, v in base_pet_category.items():
         if merge_pet_category.get(k):
-            if type(k) == int:
+            if type(k) == int and not (is_all and k < 5):
                 base_pet_category[k] = v or merge_pet_category[k]
 
 
