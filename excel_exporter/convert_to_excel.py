@@ -5,6 +5,7 @@ from SaveToExcel import save_to_excel
 from excel_exporter.header import CARD_DATA_HEADER, SKILL_DATA_HEADER
 
 BASE_PATH = 'raw_data'
+OUTPUT_PATH = 'excel'
 CARD_DATA_FILENAME = 'download_card_data.json'
 SKILL_DATA_FILENAME = 'download_skill_data.json'
 
@@ -58,7 +59,7 @@ def export_card_data() -> None:
             card_info_dict[key] = card_info[index]
         contents[sheet_name][card_info[0]] = card_info_dict
 
-    save_filepath = os.path.join(BASE_PATH, CARD_DATA_FILENAME + '.xlsx')
+    save_filepath = os.path.join(OUTPUT_PATH, CARD_DATA_FILENAME + '.xlsx')
     save_to_excel(headers, contents, save_filepath)
 
 
@@ -84,7 +85,7 @@ def export_skill_data() -> None:
             skill_info_dict['编号'] = i
         contents[sheet_name][i] = skill_info_dict
 
-    save_filepath = os.path.join(BASE_PATH, SKILL_DATA_FILENAME + '.xlsx')
+    save_filepath = os.path.join(OUTPUT_PATH, SKILL_DATA_FILENAME + '.xlsx')
     save_to_excel(headers, contents, save_filepath)
 
 
