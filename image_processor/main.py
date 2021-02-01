@@ -63,12 +63,19 @@ def get_monster_icon_info(card_info):
     path = os.path.join(IMAGE_BASE_PATH, 'pet_icon', folder)
     file_name = 'pet_%04d.png' % card_info.id
     full_path = os.path.join(path, file_name)
+
+    # 缺的图片比例是不对的，所以手工调下偏移
+    # 填写0~99，用完改回0
+    first_index = 0
+    offset_fix_x = (first_index - 1) % 10 * (96 + 6)
+    offset_fix_y = int(first_index / 10) * (96 + 6)
+
     return {
         'id': card_info.id,
         'card_file': 'CARDS_%03d.PNG' % (int((card_info.id-1) / 100)+1),
         'offset': [
-            (card_info.id - 1) % 10 * (96 + 6),
-            (int((card_info.id - 1) / 10) % 10) * (96 + 6)
+            (card_info.id - 1) % 10 * (96 + 6) - offset_fix_x,
+            (int((card_info.id - 1) / 10) % 10) * (96 + 6) - offset_fix_y
         ],
         'path': path,
         'file_name': file_name,
