@@ -65,8 +65,8 @@ def get_monster_icon_info(card_info):
     full_path = os.path.join(path, file_name)
 
     # 缺的图片比例是不对的，所以手工调下偏移
-    # 填写0~99，用完改回0
-    first_index = 0
+    # 填写1~100，用完改回1
+    first_index = 1
     offset_fix_x = (first_index - 1) % 10 * (96 + 6)
     offset_fix_y = int(first_index / 10) * (96 + 6)
 
