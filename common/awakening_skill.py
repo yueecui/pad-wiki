@@ -90,15 +90,22 @@ AWAKENING_SKILL_MAP = {
     72: {'n': '毒宝珠的加护'},
 }
 
+# 等价表
+AW_SK_EQUIVALENCE_TABLE = {
+    52: {'n': '绑定耐性＋', 'plus': {'id': 10, 'v': 2}},
+    53: {'n': '操作时间延长＋', 'plus': {'id': 19, 'v': 2}},
+    56: {'n': '技能加速＋', 'plus': {'id': 21, 'v': 2}},
+    68: {'n': '黑暗耐性＋', 'plus': {'id': 11, 'v': 5}},
+    69: {'n': '妨碍耐性＋', 'plus': {'id': 12, 'v': 5}},
+    70: {'n': '毒耐性＋', 'plus': {'id': 13, 'v': 5}},
+}
 
-def get_awakening_skill_replace_map():
-    replace_map = {}
-    for aw_sk_id, aw_sk_info in AWAKENING_SKILL_MAP.items():
-        if aw_sk_info.get('plus'):
-            replace_map[aw_sk_info['plus']['id']] = []
-            for i in range(aw_sk_info['plus']['v']):
-                replace_map[aw_sk_info['plus']['id']].append(aw_sk_id)
-    return replace_map
+
+def get_awakening_skill_value(aw_sk_id):
+    if aw_sk_id in AW_SK_EQUIVALENCE_TABLE and AW_SK_EQUIVALENCE_TABLE[aw_sk_id].get('plus'):
+        return AW_SK_EQUIVALENCE_TABLE[aw_sk_id]['plus']['id'], AW_SK_EQUIVALENCE_TABLE[aw_sk_id]['plus']['v']
+    else:
+        return aw_sk_id, 1
 
 
 class Awakening(Enum):

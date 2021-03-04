@@ -1,13 +1,11 @@
 # 整理card数据
 from typing import Dict, Any
 from common.pad_types import CardId, PetInfo, Curve
-from common.awakening_skill import get_awakening_skill_replace_map
+from common.awakening_skill import get_awakening_skill_value
 from parse.raw.skill import load_skill_data
 from parse.raw.card import load_card_data
 from parse.skill import *
 import math
-
-AWAKENING_SKILL_REPLACE_MAP = get_awakening_skill_replace_map()
 
 
 def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
@@ -45,7 +43,7 @@ def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
         'awakenings': card_info.awakenings,
         'super_awakenings': card_info.super_awakenings,
         'search_awakenings': {
-            'base': [],
+            'base': {},
             'super': [],
         },
         'active_skill': get_active_skill_detail(card_info.active_skill_id, skill_data),
@@ -90,24 +88,28 @@ def clean_pet_info(card_id, card_data, skill_data) -> PetInfo:
         pet_info['params']['rec_limit'] = math.ceil(pet_info['params']['rec_max'] * (100 + card_info.limit_mult) / 100)
         pet_info['params']['limit_score'] = pet_info['params']['hp_limit'] / 10 + pet_info['params']['atk_limit'] / 5 + pet_info['params']['rec_limit'] / 3,
 
-    for aw_sk_id in pet_info['awakenings']:
-        if aw_sk_id in AWAKENING_SKILL_REPLACE_MAP:
-            pet_info['search_awakenings']['base'].extend(AWAKENING_SKILL_REPLACE_MAP[aw_sk_id])
-        else:
-            pet_info['search_awakenings']['base'].append(aw_sk_id)
+    pet_info['search_awakenings']['base'] = count_aw_sk_number(pet_info['awakenings'])
 
     for super_aw_sk_id in pet_info['super_awakenings']:
-        temp_aw_sk_list = pet_info['search_awakenings']['base'].copy()
-        if super_aw_sk_id in AWAKENING_SKILL_REPLACE_MAP:
-            temp_aw_sk_list.extend(AWAKENING_SKILL_REPLACE_MAP[super_aw_sk_id])
-        else:
-            temp_aw_sk_list.append(super_aw_sk_id)
+        temp_aw_sk_list = pet_info['awakenings'].copy()
+        temp_aw_sk_list.append(super_aw_sk_id)
         pet_info['search_awakenings']['super'].append({
             'id': super_aw_sk_id,
-            'sl': temp_aw_sk_list,
+            'sl': count_aw_sk_number(temp_aw_sk_list),
         })
 
     return pet_info
+
+
+def count_aw_sk_number(aw_sk_list):
+    aw_sk_map = {}
+    for aw_sk_id in aw_sk_list:
+        aw_sk_id, value = get_awakening_skill_value(aw_sk_id)
+        if aw_sk_id in aw_sk_map:
+            aw_sk_map[aw_sk_id] += value
+        else:
+            aw_sk_map[aw_sk_id] = value
+    return aw_sk_map
 
 
 # 进化类型
