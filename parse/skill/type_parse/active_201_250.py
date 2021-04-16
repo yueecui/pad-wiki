@@ -26,6 +26,45 @@ def skill_type_207(result, skill_id, skill_data):
     result['detail']['orb_roulette'] = [p[0], p[1], p[7]]
 
 
+# 生成两种宝珠
+def skill_type_208(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 3)
+    to_list_a = bitmap_to_flag_array(p[0])
+    to_number_a = p[1]
+    to_list_b = bitmap_to_flag_array(p[4])
+    to_number_b = p[3]
+    exclude_list = bitmap_to_flag_array(p[2])
+
+    if len(exclude_list) == 0:
+        result['desc_cn'].append(f'随机生成{to_number_a}颗{get_enable_orb_text(to_list_a)}和'
+                                 f'{to_number_b}颗{get_enable_orb_text(to_list_b)}')
+    else:
+        result['desc_cn'].append(f'在{get_enable_orb_text(exclude_list)}之外，'
+                                 f'随机生成{to_number_a}颗{get_enable_orb_text(to_list_a)}和'
+                                 f'{to_number_b}颗{get_enable_orb_text(to_list_b)}')
+
+    if 'turn_type' not in result['detail']:
+        result['detail']['turn_type'] = get_blank_turn_type_map()
+    result['detail']['turn_type'][4] = 1
+    if 'turn_to' not in result['detail']:
+        result['detail']['turn_to'] = bitmap_to_flag_array(0)
+    result['detail']['turn_to'] = union_array(result['detail']['turn_to'], to_list_a)
+    result['detail']['turn_to'] = union_array(result['detail']['turn_to'], to_list_b)
+
+
+# 其他角色技能减速
+def skill_type_218(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 2)
+    if p[0] == p[1]:
+        result['desc_cn'].append(f'自身以外其他我方技能冷却时间延长{p[0]}回合')
+    else:
+        result['desc_cn'].append(f'自身以外其他我方技能冷却时间延长{p[0]}～{p[1]}回合')
+
+    result['detail']['skill_slow'] = [p[0], p[1]]
+
+
 # 封印自己技能
 def skill_type_214(result, skill_id, skill_data):
     p = list(skill_data[skill_id].params)

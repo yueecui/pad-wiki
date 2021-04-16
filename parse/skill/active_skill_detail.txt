@@ -57,6 +57,7 @@ awakening_cut      # 根据觉醒数减少受到伤害
 # 其他效果
 the_world               # 时间停止：持续秒数
 skill_boost             # 技能加速：回合最小，回合最大
+skill_slow             # 技能冷却延长：回合最小，回合最大
 poison                      # 使敌方中毒：掉血倍率
 sub_leader              # 替换队长：True
 ele_change               # 自身属性变化：回合数，属性

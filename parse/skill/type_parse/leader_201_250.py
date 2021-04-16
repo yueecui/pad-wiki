@@ -152,3 +152,24 @@ def skill_type_210(result, skill_id, skill_data):
     leader_buff = get_blank_leader_buff()
     leader_buff['add_combo'] = add_combo
     update_leader_buff(result, leader_buff)
+
+
+# 一次性消除指定个数以上的珠子时，追加COMBO
+def skill_type_219(result, skill_id, skill_data):
+    p = list(skill_data[skill_id].params)
+    add_zero(p, 3)
+
+    orb_array = bitmap_to_flag_array(p[0])
+    add_combo = p[2]
+
+    if len(orb_array) == sum(orb_array):
+        result['desc_cn'].append(f'一次性消除任意一种宝珠{p[1]}个以上时，额外加算{add_combo}COMBO')
+    elif sum(orb_array) == 1:
+        result['desc_cn'].append(f'一次性消除{get_enable_orb_text(orb_array)}{p[1]}个以上时，额外加算{add_combo}COMBO')
+    else:
+        result['desc_cn'].append(f'一次性消除{get_enable_orb_text(orb_array)}中任意一种{p[1]}，额外加算{add_combo}COMBO')
+
+    leader_buff = get_blank_leader_buff()
+    leader_buff['add_combo'] = add_combo
+
+    update_leader_buff(result, leader_buff)
